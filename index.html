@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>ŠTEFAN BOHUMEL // NEURAL_RESUME</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        background: "#0d0d0d",
+                        "on-surface": "#e2e2e2",
+                        outline: "#849495",
+                        "surface-container-low": "#161616",
+                        surface: "#111111",
+                        primary: "#e9feff",
+                        "primary-container": "#00f5ff",
+                        "on-primary": "#003739",
+                        secondary: "#ffb4ab",
+                        "on-background": "#e2e2e2",
+                        "accent-cyan": "#00f5ff",
+                        "accent-gold": "#ffcc00",
+                        "surface-variant": "#222222",
+                        "surface-container": "#1a1a1a",
+                        "surface-bright": "#2a2a2a",
+                        "surface-container-high": "#242424",
+                        error: "#ffb4ab",
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    fontFamily: {
+                        "headline-xl": ["Anton"],
+                        "label-caps": ["Space Mono"],
+                        "body-md": ["JetBrains Mono"],
+                        "headline-lg": ["Anton"],
+                        "code-sm": ["Space Mono"],
+                    },
+                    fontSize: {
+                        "headline-xl": ["120px", {lineHeight: "0.85", letterSpacing: "-0.04em", fontWeight: "400"}],
+                        "label-caps": ["10px", {lineHeight: "100%", fontWeight: "700"}],
+                        "body-md": ["16px", {lineHeight: "150%", fontWeight: "400"}],
+                        "headline-lg": ["48px", {lineHeight: "100%", letterSpacing: "-0.02em", fontWeight: "400"}],
+                        "code-sm": ["12px", {lineHeight: "140%", fontWeight: "400"}]
+                    },
+                    animation: {
+                        'glitch-fast': 'glitch 0.4s cubic-bezier(.25,.46,.45,.94) infinite',
+                        'terminal-cursor': 'blink 1s step-end infinite',
+                        'scan-vertical': 'scanVertical 4s linear infinite',
+                        'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        glitch: {
+                            '0%': { transform: 'translate(0)', textShadow: '-2px 0 #ff00c1, 2px 0 #00fff9' },
+                            '20%': { transform: 'translate(-1px, 1px)' },
+                            '40%': { transform: 'translate(-1px, -1px)' },
+                            '60%': { transform: 'translate(1px, 1px)' },
+                            '80%': { transform: 'translate(1px, -1px)' },
+                            '100%': { transform: 'translate(0)' },
+                        },
+                        blink: {
+                            'from, to': { opacity: 1 },
+                            '50%': { opacity: 0 },
+                        },
+                        scanVertical: {
+                            '0%': { top: '-10%' },
+                            '100%': { top: '110%' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(0, 245, 255, 0.2)' },
+                            '50%': { boxShadow: '0 0 30px rgba(0, 245, 255, 0.5)' }
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #e2e2e2;
+            overflow-x: hidden;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 101;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.08) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 100;
+            animation: scanlineMove 20s linear infinite;
+        }
+        @keyframes scanlineMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(0, 245, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 245, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glass-card {
+            background: rgba(17, 17, 17, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(0, 245, 255, 0.3);
+            background: rgba(26, 26, 26, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0, 245, 255, 0.15);
+        }
+
+        .text-glow-cyan { text-shadow: 0 0 12px rgba(0, 245, 255, 0.4); }
+        .text-glow-gold { text-shadow: 0 0 12px rgba(255, 204, 0, 0.4); }
+
+        .profile-frame::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(0, 245, 255, 0.1), transparent);
+            transform: skewX(-25deg);
+            animation: scan 6s infinite;
+        }
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        .neural-scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #00f5ff;
+            box-shadow: 0 0 15px #00f5ff, 0 0 5px #00f5ff;
+            z-index: 20;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        
+        .neural-glow-spot {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(0, 245, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 25;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: screen;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .profile-frame:hover .neural-glow-spot {
+            opacity: 1;
+        }
+
+        .profile-frame:hover img {
+            animation: brutal-jitter 0.2s linear infinite;
+        }
+
+        @keyframes brutal-float-1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(6px, -12px) rotate(2deg); }
+            50% { transform: translate(-8px, 6px) rotate(-3deg); }
+            75% { transform: translate(10px, 4px) rotate(1deg); }
+        }
+        @keyframes brutal-float-2 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-10px, 8px) rotate(-2deg); }
+            50% { transform: translate(12px, -6px) rotate(3deg); }
+            75% { transform: translate(-6px, -10px) rotate(-1.5deg); }
+        }
+        @keyframes brutal-float-3 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(14px, 10px) rotate(-1deg); }
+            50% { transform: translate(-4px, -14px) rotate(2.5deg); }
+            75% { transform: translate(-12px, 8px) rotate(-2deg); }
+        }
+        @keyframes brutal-float-4 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-8px, -8px) rotate(3deg); }
+            50% { transform: translate(10px, 12px) rotate(-1.5deg); }
+            75% { transform: translate(6px, -12px) rotate(2deg); }
+        }
+
+        @keyframes brutal-jitter {
+            0% { transform: translate(0); filter: blur(0) grayscale(1); }
+            10% { transform: translate(-2px, 2px); filter: blur(0.5px) grayscale(0.8) hue-rotate(90deg); }
+            20% { transform: translate(2px, -2px); filter: grayscale(1); }
+            30% { transform: translate(-2px, -2px); filter: grayscale(0.7) hue-rotate(-90deg); }
+            40% { transform: translate(2px, 2px); filter: grayscale(1); }
+            50% { transform: translate(0); filter: blur(0) grayscale(1); }
+        }
+
+        .skill-node {
+            display: inline-block;
+            cursor: crosshair;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: left;
+            background: transparent;
+            border: none;
+            padding: 0;
+            appearance: none;
+            position: relative;
+        }
+
+        .skill-node:nth-child(4n+1) { animation: brutal-float-1 7s ease-in-out infinite; }
+        .skill-node:nth-child(4n+2) { animation: brutal-float-2 5.5s ease-in-out infinite; }
+        .skill-node:nth-child(4n+3) { animation: brutal-float-3 8.2s ease-in-out infinite; }
+        .skill-node:nth-child(4n+4) { animation: brutal-float-4 6.4s ease-in-out infinite; }
+
+        .skill-node:hover, .skill-node:focus-visible {
+            transform: scale(1.4) !important;
+            z-index: 50;
+            filter: brightness(1.5) drop-shadow(0 0 15px currentColor);
+            animation: brutal-jitter 0.15s linear infinite !important;
+            outline: none;
+        }
+
+        .particle-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+        .particle {
+            position: absolute;
+            background: currentColor;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(1px);
+        }
+        @keyframes float-particle {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-100px) translateX(20px); opacity: 0; }
+        }
+
+        .focus-ring {
+            outline: none;
+        }
+        .focus-ring:focus-visible {
+            outline: 2px solid #00f5ff;
+            outline-offset: 4px;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 11px;
+            width: 2px;
+            background: linear-gradient(to bottom, #00f5ff, rgba(0, 245, 255, 0.1));
+            box-shadow: 0 0 10px rgba(0, 245, 255, 0.4);
+            z-index: 0;
+        }
+
+        .academic-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .academic-card:hover {
+            border-color: #ffcc00;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.15);
+            background: rgba(255, 204, 0, 0.05);
+        }
+        .academic-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 204, 0, 0.1) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.5s;
+        }
+        .academic-card:hover::before {
+            opacity: 1;
+        }
+
+        .cert-node {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .cert-node:hover {
+            border-color: #00f5ff;
+            background: rgba(0, 245, 255, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background selection:bg-accent-cyan selection:text-black">
+<div class="grid-overlay"></div>
+<div class="scanlines"></div>
+<div class="noise-overlay"></div>
+<nav class="fixed top-0 left-0 w-full z-[150] border-b border-white/5 bg-background/80 backdrop-blur-md">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-12 h-20 flex justify-between items-center">
+        <a aria-label="Home: ŠTEFAN BOHUMEL" class="font-headline-lg text-2xl tracking-tighter text-white hover:animate-glitch-fast cursor-pointer focus-ring px-2 py-1" href="index.html">ŠTEFAN BOHUMEL</a>
+        <div class="hidden md:flex gap-10 items-center">
+            <a aria-label="Matrix Section" class="font-label-caps text-accent-cyan tracking-widest border-b border-accent-cyan pb-1 focus-ring" href="index.html">MATRIX (.env)</a>
+            <a aria-label="Showcase Section" class="font-label-caps text-white/70 hover:text-white transition-colors tracking-widest focus-ring" href="showcase.html">SHOWCASE</a>
+            <a aria-label="Contact Section" class="font-label-caps text-white/70 hover:text-white transition-colors tracking-widest focus-ring" href="contact.html">CONTACT</a>
+        </div>
+    </div>
+</nav>
+<main class="relative pt-32 pb-20 max-w-[1440px] mx-auto px-6 md:px-12">
+<!-- Hero Header -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20 items-center">
+<div class="lg:col-span-8 flex flex-col">
+<h1 aria-label="ŠTEFAN BOHUMEL" class="relative group cursor-default select-none transition-all duration-500 hover:scale-[1.02] focus-ring" tabindex="0">
+<div class="font-headline-xl text-white m-0 text-[80px] sm:text-[100px] md:text-[140px] leading-[0.9] mb-10 relative z-10">
+<span class="block tracking-[-0.02em] flex flex-wrap gap-x-6 items-center justify-start">
+<span class="relative inline-block"><span class="text-white drop-shadow-[0_0_15px_rgba(0,245,255,0.6)]">ŠTEFAN</span></span>
+<span class="relative inline-block"><span class="text-transparent stroke-accent-cyan [text-shadow:_-1px_-1px_0_#00f5ff,_1px_-1px_0_#00f5ff,_-1px_1px_0_#00f5ff,_1px_1px_0_#00f5ff] opacity-80 group-hover:opacity-100 transition-opacity duration-500">BOHUMEL</span></span>
+</span>
+</div>
+<div class="absolute inset-0 pointer-events-none -z-10 blur-[30px] opacity-20 group-hover:opacity-40 transition-opacity duration-700 bg-accent-cyan/30 rounded-full"></div>
+<style>
+                    @keyframes premium-glitch {
+                      0% { text-shadow: -2px 0 #00f5ff, 2px 0 #ff0000, 0 0 10px rgba(0,245,255,0.4); }
+                      25% { text-shadow: 2px 0 #00f5ff, -2px 0 #ff0000, 0 0 12px rgba(0,245,255,0.5); }
+                      50% { text-shadow: -1px 0 #00f5ff, 1px 0 #ff0000, 0 0 8px rgba(0,245,255,0.3); }
+                      75% { text-shadow: 1px 0 #00f5ff, -1px 0 #ff0000, 0 0 15px rgba(0,245,255,0.6); }
+                      100% { text-shadow: -2px 0 #00f5ff, 2px 0 #ff0000, 0 0 10px rgba(0,245,255,0.4); }
+                    }
+                    h1[aria-label="ŠTEFAN BOHUMEL"] .text-white {
+                      animation: premium-glitch 4s ease-in-out infinite;
+                    }
+                    h1[aria-label="ŠTEFAN BOHUMEL"]:hover .text-white {
+                      animation-duration: 0.2s;
+                      text-shadow: -3px 0 #00f5ff, 3px 0 #ff0000, 0 0 25px rgba(0,245,255,0.8) !important;
+                    }
+                </style>
+</h1>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/5 border border-white/10 p-5 rounded-sm relative group/ident overflow-hidden">
+<div class="absolute top-0 right-0 p-2 font-label-caps text-[8px] text-white/10 select-none">ID_SYS_V4.2</div>
+<!-- Left: [LOC_CORE] -->
+<div class="space-y-4 border-r border-white/5 pr-4">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 bg-accent-cyan shadow-[0_0_8px_#00f5ff] animate-pulse"></div>
+<span class="font-label-caps text-accent-cyan text-[10px] tracking-widest uppercase">[LOC_CORE]</span>
+</div>
+<div class="space-y-2">
+<div class="flex flex-col">
+<span class="text-[8px] font-label-caps text-white/40 uppercase tracking-tighter">Deployment</span>
+<span class="font-body-md text-white/90 text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-accent-cyan">location_on</span>
+                                    Olomouc, CZ
+                                </span>
+</div>
+<div class="flex flex-col">
+<span class="text-[8px] font-label-caps text-white/40 uppercase tracking-tighter">Status</span>
+<span class="font-code-sm text-accent-cyan text-[10px] uppercase tracking-widest">Active / Available</span>
+</div>
+</div>
+</div>
+<!-- Right: [LANGS] -->
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 bg-accent-gold shadow-[0_0_8px_#ffcc00] animate-pulse"></div>
+<span class="font-label-caps text-accent-gold text-[10px] tracking-widest uppercase">[LANGS]</span>
+</div>
+<div class="space-y-3">
+<div class="space-y-1">
+<div class="flex justify-between text-[9px] font-code-sm uppercase">
+<span class="text-white/80">CS - Native</span>
+<span class="text-accent-gold">100%</span>
+</div>
+<div class="h-1 bg-white/10 w-full overflow-hidden">
+<div class="h-full bg-accent-gold shadow-[0_0_8px_#ffcc00]" style="width: 100%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-[9px] font-code-sm uppercase">
+<span class="text-white/80">SK - Fluent</span>
+<span class="text-accent-cyan">85%</span>
+</div>
+<div class="h-1 bg-white/10 w-full overflow-hidden">
+<div class="h-full bg-accent-cyan" style="width: 98%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-[9px] font-code-sm uppercase">
+<span class="text-white/80">EN - Proficient</span>
+<span class="text-accent-cyan">65%</span>
+</div>
+<div class="h-1 bg-white/10 w-full overflow-hidden">
+<div class="h-full bg-accent-cyan" style="width: 95%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom: Uplink Hub -->
+<div class="col-span-full pt-4 border-t border-white/10">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-[9px] text-white/30 uppercase tracking-widest">Uplink_Hub</span>
+<div class="flex gap-3">
+<a aria-label="LinkedIn Uplink" class="w-8 h-8 flex items-center justify-center border border-white/10 hover:border-accent-cyan hover:text-accent-cyan hover:shadow-[0_0_10px_rgba(0,245,255,0.3)] transition-all focus-ring group/link" href="https://www.linkedin.com/in/%C5%A1tefan-bohumel-480865219/" target="_blank">
+<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg>
+</a>
+<a aria-label="GitHub Uplink" class="w-8 h-8 flex items-center justify-center border border-white/10 hover:border-accent-cyan hover:text-accent-cyan hover:shadow-[0_0_10px_rgba(0,245,255,0.3)] transition-all focus-ring group/link" href="https://github.com/Ra9mirez11" target="_blank">
+<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+</a>
+<a aria-label="Contra Uplink" class="w-8 h-8 flex items-center justify-center border border-white/10 hover:border-accent-cyan hover:text-accent-cyan hover:shadow-[0_0_10px_rgba(0,245,255,0.3)] transition-all focus-ring group/link" href="https://contra.com/stefan_bohumel_6aml7jz0?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&amp;referrerUsername=stefan_bohumel_6aml7jz0" target="_blank"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHb3WfZvnR8mQQMQB95m5mbav6WMHFsZc1_xPkqb1TD9Vpc-tOCLWfvX8XuB3Nks_lWPXCSdb0gt2lpUqQ8SsSp1vb9nOf6yMxryltYNby-78dFMHxma0eceajArvmfDKNPwnyUdTHWYq7G13zXqL4rZsCPk4rMzyOfQIfbvbziRwWIoT4PY6LI8-Cf3PLrNLp3cxrTz3nRpICiuVIMORY1vc4IJE0V1vpFJaf4r5CM-ln5Uof5-15vILrNg2Dk0S1fiPWvwXOSA0" alt="Contra" class="w-full h-full object-contain p-1"></a></div>
+</div>
+</div>
+</div>
+<div class="border-l border-white/20 pl-6 flex flex-col justify-between">
+<p class="font-body-md text-white/70 leading-relaxed italic text-sm">
+                        I'm a Hybrid Architect specialized in Web3 interfaces and AI integrations. I build high-performance systems and design elite user experiences. I bridge the gap between complex backend architecture and intuitive frontend design, creating solutions that are secure, fast, and visually striking.
+                    </p>
+<p class="font-code-sm tracking-widest uppercase mt-6 leading-relaxed text-base animate-glitch-fast text-[#00ff41]" style="text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);">
+                        "I design the future. Then I hack it to make it unbreakable."
+                    </p>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 relative group">
+<div class="profile-frame glass-card p-1 border-accent-cyan/20 group-hover:border-accent-cyan/40 animate-pulse-glow relative overflow-hidden" id="neural-profile-container">
+<!-- Neural Scan Effects -->
+<div class="neural-scan-line animate-scan-vertical"></div>
+<div class="neural-glow-spot" id="neural-spotlight"></div>
+<div class="aspect-[3/4] overflow-hidden grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000 relative">
+<img alt="Štefan Bohumel professional portrait" class="w-full h-full object-cover relative z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmij2f3R-r2bFhTszGC0NfLvYrcl5_tFH_NbiBI0Bcv5yB4yM7-lUIrAaAKht56IyF1FsIwhTWUQD26pe2K73XgXbmmbmFDD9Ocei1UD9l7__vsg23wrMTGuq0reteaV_dHLH8YrRCFH8Mh5Hz5FeTpTTfiWeUQEVq3FxlKF3FVb5Gy20BJ2YBx5vjVkSSnmqnbyCG5N644peurS4IZeGr3XRAdBTSZEm5meawHaEsQ5AIBfU92HgKR4TSKZU2Xm4hAtzpCf8C7S0">
+</div>
+</div>
+<div aria-label="Current Mission Status" class="mt-4 font-code-sm text-accent-cyan text-sm flex items-center gap-2 overflow-hidden bg-black/40 p-3 border border-white/10 focus-ring" tabindex="0">
+<span class="opacity-60 text-[10px]">&gt;</span>
+<span class="tracking-wider" id="typewriter-text">UX/UI Desig</span>
+<span aria-hidden="true" class="w-1.5 h-4 bg-accent-cyan animate-terminal-cursor"></span>
+</div>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+<!-- Left: Experience & Education -->
+<div class="lg:col-span-7 space-y-8">
+<!-- Work History Card -->
+<section class="glass-card p-8 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-6 font-headline text-white/5 text-[50px] select-none pointer-events-none uppercase tracking-widest">EXPERIENCE</div>
+<h2 class="font-headline-lg text-2xl text-white mb-10 flex items-center gap-3">
+<span class="text-accent-cyan text-sm font-code-sm">01/</span> WORK_HISTORY
+                </h2>
+<div class="relative timeline-container pl-10 space-y-12">
+<!-- Main Role: Plastics Industry Technologist -->
+<article class="relative group/item">
+<!-- Node -->
+<div class="absolute left-[-34px] top-1 w-6 h-6 bg-accent-cyan rounded-full border-4 border-background shadow-[0_0_15px_#00f5ff] z-10 transition-transform group-hover/item:scale-125"></div>
+<div class="p-6 bg-accent-cyan/5 border border-accent-cyan/20 rounded-lg hover:bg-accent-cyan/10 transition-all duration-300">
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+<h3 class="font-headline-lg text-xl text-white tracking-wide uppercase">Plastics Industry Technologist</h3>
+<span class="font-body-md text-accent-cyan font-bold text-[12px] tracking-widest bg-accent-cyan/10 px-2 py-1 rounded">DEC 2017 – PRESENT</span>
+</div>
+<ul class="space-y-3 font-body-md text-white/80 text-[13px] leading-relaxed">
+<li class="flex gap-3"><span aria-hidden="true" class="text-accent-cyan font-bold">_</span> Management and optimization of production processes for maximum efficiency.</li>
+<li class="flex gap-3"><span aria-hidden="true" class="text-accent-cyan font-bold">_</span> Testing of new technologies and implementation into production lines.</li>
+<li class="flex gap-3"><span aria-hidden="true" class="text-accent-cyan font-bold">_</span> Quality control and data analysis responsibility.</li>
+</ul>
+</div>
+</article>
+<!-- Secondary Role: Security Personnel -->
+<article class="relative group/item">
+<!-- Node (Dimmed) -->
+<div class="absolute left-[-31px] top-1 w-4 h-4 bg-white/20 rounded-full border-2 border-background z-10 group-hover/item:bg-white/40 group-hover/item:shadow-[0_0_8px_white] transition-all"></div>
+<div class="pl-4">
+<div class="flex flex-col md:flex-row md:items-baseline gap-2 mb-1">
+<h4 class="font-headline-lg text-md text-white/70 uppercase">Security Personnel / Detective</h4>
+<span class="font-body-md text-white/40 text-[10px] tracking-widest uppercase">2016 – 2017</span>
+</div>
+<p class="font-body-md text-white/50 text-[12px] italic leading-relaxed">Asset protection and monitoring of risk factors in the field.</p>
+</div>
+</article>
+<!-- Secondary Role: Energy Sales -->
+<article class="relative group/item">
+<!-- Node (Dimmed) -->
+<div class="absolute left-[-31px] top-1 w-4 h-4 bg-white/20 rounded-full border-2 border-background z-10 group-hover/item:bg-white/40 group-hover/item:shadow-[0_0_8px_white] transition-all"></div>
+<div class="pl-4">
+<div class="flex flex-col md:flex-row md:items-baseline gap-2 mb-1">
+<h4 class="font-headline-lg text-md text-white/70 uppercase">Energy Sales Representative</h4>
+<span class="font-body-md text-white/40 text-[10px] tracking-widest uppercase">2013 – 2015</span>
+</div>
+<p class="font-body-md text-white/50 text-[12px] italic leading-relaxed">Strategic negotiation and client acquisition in the energy sector.</p>
+</div>
+</article>
+</div>
+</section>
+<!-- Education Card -->
+<section class="glass-card p-8 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-6 font-headline text-white/5 text-[50px] select-none pointer-events-none uppercase tracking-widest">ACADEMIC</div>
+<h2 class="font-headline-lg text-2xl text-white mb-10 flex items-center gap-3">
+<span class="text-accent-gold text-sm font-code-sm">02/</span> ACADEMIC_MODULES
+                </h2>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+<!-- Module 1 -->
+<div class="academic-card p-6 bg-white/5 border border-white/10 rounded-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4 border border-white/10 text-white/40">
+<span class="material-symbols-outlined">build</span>
+</div>
+<h4 class="font-bold text-white mb-2 uppercase text-[12px] leading-tight font-headline-lg">Vocational School Rýmařov</h4>
+<p class="text-white/50 font-code-sm text-[10px] uppercase tracking-tighter">Repairman for Agricultural Machinery</p>
+</div>
+<!-- Module 2 -->
+<div class="academic-card p-6 bg-white/5 border border-accent-gold/40 rounded-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-accent-gold/10 flex items-center justify-center mb-4 border border-accent-gold/30 text-accent-gold">
+<span class="material-symbols-outlined">palette</span>
+</div>
+<h4 class="font-bold text-accent-gold mb-2 uppercase text-[12px] leading-tight font-headline-lg">UX/UI Design Course</h4>
+<p class="text-white/70 font-code-sm text-[10px] uppercase tracking-tighter">Advanced design techniques</p>
+</div>
+<!-- Module 3 -->
+<div class="academic-card p-6 bg-white/5 border border-white/10 rounded-sm flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4 border border-white/10 text-white/40">
+<span class="material-symbols-outlined">handshake</span>
+</div>
+<h4 class="font-bold text-white mb-2 uppercase text-[12px] leading-tight font-headline-lg">Sales Skills Course</h4>
+<p class="text-white/50 font-code-sm text-[10px] uppercase tracking-tighter">Psychology and negotiation</p>
+</div>
+</div>
+<!-- New Section: Technical Certifications -->
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="h-[1px] flex-grow bg-white/10"></div>
+<h3 class="font-label-caps text-[11px] text-white/40 tracking-[0.3em] uppercase">Technical_Certifications</h3>
+<div class="h-[1px] flex-grow bg-white/10"></div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+<!-- Cert 1 -->
+<div class="cert-node p-4 bg-black/40 rounded-sm group/cert">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[18px] text-accent-cyan/60 group-hover/cert:text-accent-cyan transition-colors">terminal</span>
+<div class="flex flex-col">
+<span class="font-headline-lg text-[13px] text-white/90 leading-none mb-1">Java &amp; Python</span>
+<span class="font-code-sm text-[9px] text-white/40 uppercase tracking-tighter">Backend Systems</span>
+</div>
+</div>
+</div>
+<!-- Cert 2 -->
+<div class="cert-node p-4 bg-black/40 rounded-sm group/cert">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[18px] text-accent-gold/60 group-hover/cert:text-accent-gold transition-colors">token</span>
+<div class="flex flex-col">
+<span class="font-headline-lg text-[13px] text-white/90 leading-none mb-1">Content Creator</span>
+<span class="font-code-sm text-[9px] text-white/40 uppercase tracking-tighter">Digital Assets</span>
+</div>
+</div>
+</div>
+<!-- Cert 3 -->
+<div class="cert-node p-4 bg-black/40 rounded-sm group/cert">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[18px] text-accent-cyan/60 group-hover/cert:text-accent-cyan transition-colors">code</span>
+<div class="flex flex-col">
+<span class="font-headline-lg text-[13px] text-white/90 leading-none mb-1">CSS &amp; HTML</span>
+<span class="font-code-sm text-[9px] text-white/40 uppercase tracking-tighter">Frontend Architecture</span>
+</div>
+</div>
+</div>
+<!-- Cert 4 -->
+<div class="cert-node p-4 bg-black/40 rounded-sm group/cert">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[18px] text-accent-cyan/60 group-hover/cert:text-accent-cyan transition-colors">encrypted</span>
+<div class="flex flex-col">
+<span class="font-headline-lg text-[13px] text-white/90 leading-none mb-1">Blockchain &amp; Cryptography</span>
+<span class="font-code-sm text-[9px] text-white/40 uppercase tracking-tighter">Securing Data</span>
+</div>
+</div>
+</div>
+<!-- Cert 5 -->
+<div class="cert-node p-4 bg-black/40 rounded-sm group/cert">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[18px] text-accent-gold/60 group-hover/cert:text-accent-gold transition-colors">settings_input_component</span>
+<div class="flex flex-col">
+<span class="font-headline-lg text-[13px] text-white/90 leading-none mb-1">Linux Administration</span>
+<span class="font-code-sm text-[9px] text-white/40 uppercase tracking-tighter">Core Infrastructure</span>
+</div>
+</div>
+</div>
+<!-- Cert 6 -->
+<div class="cert-node p-4 bg-black/40 rounded-sm group/cert">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[18px] text-accent-cyan/60 group-hover/cert:text-accent-cyan transition-colors">psychology</span>
+<div class="flex flex-col">
+<span class="font-headline-lg text-[13px] text-white/90 leading-none mb-1">Artificial Intelligence</span>
+<span class="font-code-sm text-[9px] text-white/40 uppercase tracking-tighter">Neural Integration</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right: Skills & Meta -->
+<div class="lg:col-span-5 flex flex-col gap-8">
+<!-- Skill Matrix -->
+<section class="glass-card p-8 flex-grow relative overflow-hidden flex flex-col group/matrix" id="skill-matrix-card">
+<div aria-hidden="true" class="particle-container" id="skill-particles"></div>
+<div class="absolute top-0 right-0 p-6 font-headline text-accent-cyan/10 text-[50px] select-none pointer-events-none uppercase tracking-widest">SKILLS</div>
+<h2 class="font-headline-lg text-2xl text-white mb-8 relative z-10">Skill Matrix <span class="text-accent-cyan/50 text-[10px] font-code-sm tracking-widest ml-2">[v3.0_COLOR_MAPPED]</span></h2>
+<div class="flex flex-wrap gap-x-6 gap-y-5 font-code-sm items-baseline relative z-10 px-2 py-4">
+<!-- Cyan - Web3, Blockchain, Security, Core Tech -->
+<button aria-label="Skill: Solidity" class="skill-node text-accent-cyan text-[18px] font-bold text-glow-cyan">Solidity</button>
+<button aria-label="Skill: Move Language" class="skill-node text-accent-cyan text-[15px]">Move</button>
+<button aria-label="Skill Category: Blockchain" class="skill-node text-accent-cyan text-[16px] font-bold border border-accent-cyan/30 px-2 py-0.5">Blockchain</button>
+<button aria-label="Skill: Web3" class="skill-node text-accent-cyan text-[14px] underline underline-offset-4 decoration-accent-cyan/40">Web3</button>
+<button aria-label="Skill: Rust" class="skill-node text-accent-cyan text-[17px] font-bold">Rust</button>
+<button aria-label="Skill: DeFi" class="skill-node text-accent-cyan text-[13px]">DeFi</button>
+<button aria-label="Skill: Security" class="skill-node text-accent-cyan text-[12px] opacity-80">Security</button>
+<button aria-label="Skill: EVM" class="skill-node text-accent-cyan text-[11px] border border-accent-cyan/20 px-1">EVM</button>
+<button aria-label="Skill: Smart Contracts" class="skill-node text-accent-cyan text-[13px] italic">Smart Contracts</button>
+<button aria-label="Skill: Cryptography" class="skill-node text-accent-cyan text-[14px]">Cryptography</button>
+<button aria-label="Skill: Blockchain Analysis" class="skill-node text-accent-cyan text-[12px] border-b border-accent-cyan/20">Blockchain Analysis</button>
+<button aria-label="Skill: Requirements Analysis" class="skill-node text-accent-cyan text-[13px] italic">Requirements Analysis</button>
+<button aria-label="Skill: System Design" class="skill-node text-accent-cyan text-[15px] text-white/80">System Design</button>
+<!-- Gold - Development, AI, Design, Soft Skills -->
+<button aria-label="Skill: Python" class="skill-node text-accent-gold text-[17px] font-bold text-glow-gold">Python</button>
+<button aria-label="Skill: Next.js" class="skill-node text-accent-gold text-[15px]">Next.js</button>
+<button aria-label="Skill: React" class="skill-node text-accent-gold text-[16px] border border-accent-gold/40 px-2 py-0.5">React</button>
+<button aria-label="Skill: TypeScript" class="skill-node text-accent-gold text-[14px]">TypeScript</button>
+<button aria-label="Skill: JavaScript" class="skill-node text-accent-gold text-[15px]">JavaScript</button>
+<button aria-label="Skill: Tailwind CSS" class="skill-node text-accent-gold text-[13px] underline underline-offset-4 decoration-accent-gold/40">Tailwind CSS</button>
+<button aria-label="Skill: Node.js" class="skill-node text-accent-gold text-[12px] italic">Node.js</button>
+<button aria-label="Skill: CSS" class="skill-node text-accent-gold text-[11px]">CSS</button>
+<button aria-label="Skill: HTML" class="skill-node text-accent-gold text-[11px]">HTML</button>
+<button aria-label="Skill: Generative AI" class="skill-node text-accent-gold text-[18px] font-bold text-glow-gold">Generative AI</button>
+<button aria-label="Skill: Prompt Engineering" class="skill-node text-accent-gold text-[17px] border-b border-accent-gold/30">Prompt Engineering</button>
+<button aria-label="Skill: LLMs" class="skill-node text-accent-gold text-[12px] opacity-80">LLMs</button>
+<button aria-label="Skill: Custom AI Models" class="skill-node text-accent-gold text-[13px] italic">Custom AI Models</button>
+<button aria-label="Skill: LoRA Training" class="skill-node text-accent-gold text-[14px]">LoRA Training</button>
+<button aria-label="Skill: ComfyUI" class="skill-node text-accent-gold text-[13px]">ComfyUI</button>
+<button aria-label="Skill: Video Generation" class="skill-node text-accent-gold text-[12px] border border-accent-gold/30 px-1">Video Generation</button>
+<button aria-label="Skill: Chatbots" class="skill-node text-accent-gold text-[13px]">Chatbots</button>
+<button aria-label="Skill: Figma" class="skill-node text-accent-gold text-[14px] text-white/90">Figma</button>
+<button aria-label="Skill: Adobe Photoshop" class="skill-node text-accent-gold text-[16px] font-bold">Adobe Photoshop</button>
+<button aria-label="Skill: Data Analysis" class="skill-node text-accent-gold text-[14px] opacity-70">Data Analysis</button>
+<button aria-label="Skill: Injection Molding" class="skill-node text-accent-gold text-[11px] opacity-50">Injection Molding</button>
+<button aria-label="Skill: Plastics Industry" class="skill-node text-accent-gold text-[12px] italic">Plastics Industry</button>
+<button aria-label="Skill: Quality Control" class="skill-node text-accent-gold text-[11px] border border-accent-gold/20 px-1">Quality Control</button>
+<button aria-label="Skill: Production Optimization" class="skill-node text-accent-gold text-[13px]">Production Optimization</button>
+<button aria-label="Skill: Analytical Skills" class="skill-node text-accent-gold text-[14px] font-bold">Analytical Skills</button>
+<button aria-label="Skill: Communication" class="skill-node text-accent-gold text-[12px] underline underline-offset-4 decoration-accent-gold/40">Communication</button>
+<button aria-label="Skill: Sales &amp; Purchasing" class="skill-node text-accent-gold text-[13px]">Sales &amp; Purchasing</button>
+<button aria-label="Skill: Technical Training" class="skill-node text-accent-gold text-[12px] italic">Technical Training</button>
+</div>
+</section>
+<!-- Specs & Parameters -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="glass-card p-6 border-white/10">
+<div class="flex items-center gap-3 mb-4">
+<span aria-hidden="true" class="material-symbols-outlined text-accent-gold text-sm text-glow-gold">memory</span>
+<h3 class="text-[10px] font-label-caps text-white/70 tracking-widest uppercase">Hardware_Config</h3>
+</div>
+<div class="font-code-sm text-[10px] text-white/50 space-y-2">
+<div class="flex justify-between border-b border-white/5 pb-1"><span class="">CPU</span><span class="text-white/80 font-bold">Ryzen 9 7950X</span></div>
+<div class="flex justify-between border-b border-white/5 pb-1 items-start gap-4"><span class="shrink-0">GPU</span><span class="text-white/80 font-bold text-right leading-tight">RTX 4090 / RTX PRO 6000 Blackwell (96 GB VRAM)</span></div>
+<div class="flex justify-between border-b border-white/5 pb-1"><span class="">RAM</span><span class="text-white/80 font-bold">64GB DDR5</span></div>
+<div class="flex justify-between"><span class="">OS</span><span class="text-accent-cyan/80 font-bold">Arch Linux</span></div>
+</div>
+</div>
+<div class="glass-card p-6 border-white/10">
+<div class="flex items-center gap-3 mb-4">
+<span aria-hidden="true" class="material-symbols-outlined text-accent-cyan text-sm text-glow-cyan">psychology</span>
+<h3 class="text-[10px] font-label-caps text-white/70 tracking-widest uppercase">Neural_Params</h3>
+</div>
+<div class="space-y-4">
+<div>
+<span class="text-[9px] font-label-caps text-accent-cyan/70 uppercase tracking-widest">Philosophy</span>
+<p class="text-[10px] font-code-sm text-white/60 leading-tight mt-1">Privacy-First (Local AI, Data Sovereignty, Uncensored Compute)</p>
+</div>
+<div>
+<span class="text-[9px] font-label-caps text-accent-gold/70 uppercase tracking-widest">Gaming</span>
+<p class="text-[10px] font-code-sm text-white/60 leading-tight mt-1">Anno 1800, KC: Deliverance II, Dune: Awakening</p>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-2">
+<span class="px-1.5 py-0.5 bg-white/10 border border-white/20 text-[8px] text-accent-cyan/80 uppercase">Web3</span>
+<span class="px-1.5 py-0.5 bg-white/10 border border-white/20 text-[8px] text-accent-cyan/80 uppercase">Cryptography</span>
+<span class="px-1.5 py-0.5 bg-white/10 border border-white/20 text-[8px] text-accent-cyan/80 uppercase">AI Agents</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="border-t border-white/10 py-12 bg-background relative z-10">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-8">
+<div aria-label="Security Status" class="font-code-sm text-white/50 text-[11px] tracking-widest">
+            [SEC_SYSTEM]: STATUS_ENCRYPTED // © 2026 ŠTEFAN BOHUMEL
+        </div>
+<div class="flex gap-8 items-center">
+<span aria-label="System Public Key" class="font-code-sm text-[9px] text-accent-gold/60 tracking-[0.3em] uppercase hidden sm:block">Public_Key: RSA_4096_S_BOHUMEL</span>
+<div aria-hidden="true" class="flex gap-3">
+<div class="w-1.5 h-1.5 bg-accent-gold/20"></div>
+<div class="w-1.5 h-1.5 bg-accent-gold/50"></div>
+<div class="w-1.5 h-1.5 bg-accent-gold shadow-[0_0_8px_#ffcc00]"></div>
+</div>
+</div>
+</div>
+</footer>
+<script>
+    // Decrypt reveal animation
+    const decryptElements = document.querySelectorAll('.decrypt-text');
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+";
+
+    decryptElements.forEach(element => {
+        const finalValue = element.getAttribute('data-text');
+        if(!finalValue) return;
+        let iterations = 0;
+        
+        const interval = setInterval(() => {
+            element.innerText = finalValue.split("")
+                .map((char, index) => {
+                    if(index < iterations) {
+                        return finalValue[index];
+                    }
+                    return chars[Math.floor(Math.random() * chars.length)];
+                })
+                .join("");
+            
+            if(iterations >= finalValue.length) {
+                clearInterval(interval);
+            }
+            
+            iterations += 1/3;
+        }, 40);
+    });
+
+    // Typewriter effect
+    (function() {
+        const textElement = document.getElementById('typewriter-text');
+        const roles = ["Web3 Architect", "Ethical Hacker", "AI Engineer", "UX/UI Designer"];
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+
+        function type() {
+            const currentRole = roles[roleIndex];
+            
+            if (isDeleting) {
+                textElement.textContent = currentRole.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                textElement.textContent = currentRole.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            if (!isDeleting && charIndex === currentRole.length) {
+                isDeleting = true;
+                typeSpeed = 1000; // pause at full text
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                roleIndex = (roleIndex + 1) % roles.length;
+                typeSpeed = 500; // pause before next role
+            } else {
+                typeSpeed = isDeleting ? 50 : 100;
+            }
+
+            setTimeout(type, typeSpeed);
+        }
+        
+        type();
+    })();
+
+    // Skill particles effect
+    const particleContainer = document.getElementById('skill-particles');
+    const colors = ['#00f5ff', '#ffcc00', '#ffffff'];
+    if (particleContainer) {
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.width = `${Math.random() * 4 + 2}px`;
+            particle.style.height = particle.style.width;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.animation = `float-particle ${Math.random() * 5 + 5}s linear infinite`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            particleContainer.appendChild(particle);
+        }
+    }
+
+    // Neural spotlight tracking
+    const profileFrame = document.getElementById('neural-profile-container');
+    const spotlight = document.getElementById('neural-spotlight');
+    if (profileFrame && spotlight) {
+        profileFrame.addEventListener('mousemove', (e) => {
+            const rect = profileFrame.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            spotlight.style.left = `${x}px`;
+            spotlight.style.top = `${y}px`;
+        });
+    }
+</script>
+</body>
+</html>

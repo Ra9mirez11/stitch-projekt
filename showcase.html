@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>SHOWCASE_NODE // BOHUMEL_ARCHITECT</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;family=Space+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+        
+        /* Scanline Overlay */
+        .scanline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.05) 0px,
+                rgba(0, 0, 0, 0.05) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .void-noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.02;
+            pointer-events: none;
+            z-index: 40;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.98; }
+            5% { opacity: 1; }
+            10% { opacity: 0.99; }
+            15% { opacity: 0.97; }
+            25% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+
+        .animate-flicker {
+            animation: flicker 4s infinite;
+        }
+
+        body {
+            cursor: crosshair;
+            background-color: #131313;
+            overflow-x: hidden;
+        }
+
+        /* 3D Carousel Engine */
+        .carousel-scene {
+            perspective: 2000px;
+            width: 100%;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+
+        .carousel-container {
+            width: 320px;
+            height: 480px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+            animation: rotate-carousel 60s linear infinite;
+        }
+
+        .carousel-container:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes rotate-carousel {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .carousel-item {
+            position: absolute;
+            width: 320px;
+            height: 480px;
+            left: 0;
+            top: 0;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+
+        /* Glassmorphism Card Style */
+        .project-card-glass {
+            background: rgba(31, 31, 31, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 220, 229, 0.2);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 220, 229, 0.05);
+            overflow: hidden;
+        }
+
+        .project-card-glass:hover {
+            border-color: rgba(0, 220, 229, 0.8);
+            box-shadow: 0 0 40px rgba(0, 220, 229, 0.2);
+            transform: scale(1.02) translateZ(30px);
+        }
+
+        /* Glitch & Data Stream Overlay */
+        .data-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 50%, rgba(0, 220, 229, 0.05) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .chromatic-glitch:hover {
+            text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
+        }
+
+        /* Loading Sequence */
+        @keyframes decrypt {
+            0% { opacity: 0; filter: blur(10px) brightness(0); transform: translateY(20px); }
+            100% { opacity: 1; filter: blur(0) brightness(1); transform: translateY(0); }
+        }
+
+        .staggered-load > * {
+            animation: decrypt 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+        }
+        
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+
+        /* Background Visuals */
+        .circuit-bg {
+            background-image: radial-gradient(circle at 2px 2px, rgba(0, 220, 229, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+    </style>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {surface: "#131313", "on-primary-fixed": "#002021", "on-error-container": "#ffdad6", outline: "#849495", "outline-variant": "#3a494a", "on-secondary-container": "#ffe7e4", "primary-fixed": "#63f7ff", "on-surface-variant": "#b9caca", "primary-container": "#00f5ff", "on-tertiary": "#4b007e", "on-background": "#e2e2e2", primary: "#e9feff", background: "#131313", "surface-container": "#1f1f1f", "on-surface": "#e2e2e2", "surface-bright": "#393939", "surface-container-low": "#1b1b1b", "on-tertiary-fixed-variant": "#6b00b0", "on-tertiary-container": "#9000eb", "secondary-container": "#d70016", "on-error": "#690005", "on-primary-fixed-variant": "#004f53", "primary-fixed-dim": "#00dce5", "tertiary-container": "#eed4ff", "inverse-surface": "#e2e2e2", "on-secondary-fixed-variant": "#93000b", secondary: "#ffb4ab", "on-secondary": "#690005", "tertiary-fixed": "#f1daff", "surface-container-high": "#2a2a2a", error: "#ffb4ab", "on-primary": "#003739", "inverse-primary": "#00696e", "surface-variant": "#353535", "surface-tint": "#00dce5", "error-container": "#93000a", "on-tertiary-fixed": "#2d004f", "secondary-fixed": "#ffdad6", "surface-container-highest": "#353535", "on-secondary-fixed": "#410002", "inverse-on-surface": "#303030", "surface-dim": "#131313", tertiary: "#fff8fd", "surface-container-lowest": "#0e0e0e", "tertiary-fixed-dim": "#dfb7ff", "on-primary-container": "#006c71", "secondary-fixed-dim": "#ffb4ab"}, fontFamily: {"label-caps": ["Space Mono"], "headline-xl": ["Anton"], "headline-lg": ["Anton"], "body-md": ["JetBrains Mono"], "code-sm": ["Space Mono"], headline: ["Anton"], display: ["Anton"], body: ["Jetbrains Mono"], label: ["Space Mono"]}, fontSize: {"label-caps": ["10px", {lineHeight: "100%", fontWeight: "700"}], "headline-xl": ["96px", {lineHeight: "90%", letterSpacing: "-0.04em", fontWeight: "400"}], "headline-lg": ["48px", {lineHeight: "100%", letterSpacing: "-0.02em", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "150%", fontWeight: "400"}], "code-sm": ["12px", {lineHeight: "140%", fontWeight: "400"}]}, spacing: {unit: "4px", "container-max": "1440px", gutter: "16px", "margin-mobile": "16px", "margin-desktop": "48px"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}}}};</script>
+</head>
+<body class="bg-background text-on-background min-h-screen relative animate-flicker font-body-md circuit-bg">
+<div class="scanline-overlay"></div>
+<div class="void-noise"></div>
+<!-- Header / Nav -->
+<nav class="fixed top-0 left-0 w-full z-[110] border-b border-primary-container/10 bg-background/80 backdrop-blur-md">
+<div class="max-w-[1440px] mx-auto px-margin-desktop py-6 flex justify-between items-center">
+<div class="flex flex-col">
+<span class="font-headline-lg text-2xl tracking-tighter text-primary-container">Project_showcase</span>
+<span class="font-code-sm text-[10px] text-primary-container/40 tracking-[0.3em]">SHOWCASE_NODE_v.01</span>
+</div>
+<div class="hidden md:flex items-center gap-8 font-label-caps text-label-caps tracking-widest">
+    <a class="text-on-surface-variant hover:text-primary-container transition-colors" href="index.html">MATRIX (.env)</a>
+    <a class="text-primary-container border-b border-primary-container pb-1" href="showcase.html">SHOWCASE</a>
+    <a class="text-on-surface-variant hover:text-primary-container transition-colors" href="contact.html">CONTACT (Terminal)</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="h-2 w-2 rounded-full bg-primary-container shadow-[0_0_8px_#00f5ff] animate-pulse"></div>
+<span class="font-label-caps text-[10px] text-primary-container/60">LIVE_LINK: ACTIVE</span>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="relative z-10 pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto">
+<!-- Hero Title Section -->
+<header class="mb-12 text-center">
+<h1 class="font-headline-xl text-headline-xl text-on-background mb-4 staggered-load">
+<span class="stagger-1 inline-block">[SYSTEM_SHOWCASE]</span>
+</h1>
+<div class="flex flex-col items-center gap-6 staggered-load">
+<p class="font-code-sm text-on-surface-variant max-w-2xl stagger-2">
+                    DECRYPTING ARCHIVED ASSETS... INTERACTIVE 3D PROTOCOL ENGAGED. 
+                    HOVER TO HALT ROTATION. ENGAGE NODES FOR DEEP AUDIT.
+                </p>
+</div>
+</header>
+<!-- 3D Carousel Section -->
+<section class="carousel-scene py-12">
+<div class="carousel-container" id="carousel" style="animation-play-state: running;">
+<!-- Project 1: Mantle ATM -->
+<div class="carousel-item" style="transform: rotateY(0deg) translateZ(600px);">
+<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
+<div class="absolute inset-0 data-overlay"></div>
+<div class="h-48 bg-surface-container-high relative overflow-hidden">
+<img alt="Mantle ATM Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqG0emYnJskTVaV8D4ldt6ydAdW5FGPdsrayUhMJZFJRqmLzxAq1uroGtZXYF5dXjDcLwxQDjkWyJVGlNI5i10e8Jp28E_2PVAyYYj1YTVcKY3gmrWos1WpE7ktIg1EC8tiBmn9ShuQlEJgww2v--HTvo9pYGUpJC2uE_98kGd_Nyv8wax4wad8dAKjAaNrE1UGmf0dWbf9x_7hAm-84ffNK9w1zm2hN9XCnvhETaH59SN78vedf5g9Pt-VE0utAu2qAUZWOk84D4">
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="p-6 relative z-10 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Mantle ATM</h3>
+<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">L2_DEFI</span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
+                                Autonomous AI DeFi portfolio manager on Mantle network optimizing yield loops with unique tokenomics.
+                            </p>
+<div class="flex flex-col gap-2 pt-6 mt-auto">
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/ATM-MNT" target="_blank">
+<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
+                                </a>
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://atm-mnt.vercel.app" target="_blank">[LIVE_DEMO]</a>
+</div>
+</div>
+</article>
+</div>
+<!-- Project 2: Bags Auditor -->
+<div class="carousel-item" style="transform: rotateY(45deg) translateZ(600px);">
+<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
+<div class="absolute inset-0 data-overlay"></div>
+<div class="h-48 bg-surface-container-high relative overflow-hidden">
+<img alt="Bags Auditor Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxzi74VhKbQAFs977yGQQFTOFiydgyHYTa_u9D3to9lz2LXGpcJ0CwMsf5r1mFmnRkWHHzxqCoq1r-viokyniEJPfWWZMcwknk9HejIQDQXjIR6UDS4N3EJ48oc0kg8bmnfZqULOudnd9MB7Q_JC2Rtt-zGeVZTwEkujdLIQ-dsT4L6PHIJtoE-hHX2b988LV0XotYjDwfC_iUA9Erk1hdGz8hHCx2ZJhKnl4MpsT6EbS30nDNGzUFCzsVdhrQEo8HvtSfDtgaJIE">
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="p-6 relative z-10 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Bags Auditor</h3>
+<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">AI_SECURITY</span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
+                                Security AI tool for the Bags ecosystem performing real-time audits of creator tokens and fees.
+                            </p>
+<div class="flex flex-col gap-2 pt-6 mt-auto">
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/Bagsauditor" target="_blank">
+<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
+                                </a>
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://bagsauditor.vercel.app" target="_blank">[LIVE_DEMO]</a>
+</div>
+</div>
+</article>
+</div>
+<!-- Project 3: CrisisGuard Pro -->
+<div class="carousel-item" style="transform: rotateY(90deg) translateZ(600px);">
+<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
+<div class="absolute inset-0 data-overlay"></div>
+<div class="h-48 bg-surface-container-high relative overflow-hidden">
+<img alt="CrisisGuard Pro Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhtnxw7OdVjAOibGbyIlKrhs923FAFINagmTp2XKlR6cTZVWiFAFeejNpntqNiSQOjVHGgCYSu_wgRpJpJpLHmKURBS5M3BUs5F9N1JEzu4Mi6YQBFp9xoAmRFFrlkyDH5dQVNue5XqSAL_30beQRkd7V_LYgzVQu8RGCod5pTvPO0abJK39pTYteOae-2s4M1xH9LFOgrgktObEGq4uMtrsy9nFMfJa3rgbYeDILhWScAgisx5Lqbk5hC3_UXuNLxeNCepC24iIA">
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="p-6 relative z-10 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">CrisisGuard Pro</h3>
+<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">AI_MOD</span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
+                                AI-driven dashboard for crisis detection and community moderation (Gemma-4-Good Hackathon).
+                            </p>
+<div class="flex flex-col gap-2 pt-6 mt-auto">
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/CrisisGuard-Pro" target="_blank">
+<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
+                                </a>
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://crisis-guard-pro.vercel.app" target="_blank">[LIVE_DEMO]</a>
+</div>
+</div>
+</article>
+</div>
+<!-- Project 4: Graphic Novel Syndicate -->
+<div class="carousel-item" style="transform: rotateY(135deg) translateZ(600px);">
+<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
+<div class="absolute inset-0 data-overlay"></div>
+<div class="h-48 bg-surface-container-high relative overflow-hidden">
+<img alt="Graphic Novel Syndicate Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBleIsVpPZdm6dRMNC8MgMtiuOVvFIMKoW2xl7U3oHG32NTgKUMaMepghhgjnIUyPsq4A_ZSc4DNYNbgoSR5CKqIs9tbD1VKWRMo0mGaFu59XyVPymeF9avOyFJyA7GYQUzYAwRYWMbcegSu96sIuliXyZwu6mDUyrFgNnkZsJCoSD1pRjWudzXjRXHejk-DDZYOPzaef4z8uIHv5tu-U8HWPJJ_z7aLADRacp0ixfT1FxFeZVqq1_RRIpKMJjq1UlkTeksyDqFYM">
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="p-6 relative z-10 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Novel Syndicate</h3>
+<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">AI_GEN</span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
+                                Automated AI production pipeline for noir comic books using the Melius engine.
+                            </p>
+<div class="flex flex-col gap-2 pt-6 mt-auto">
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://youtu.be/lN5iBnjXkAw" target="_blank">
+<span class="material-symbols-outlined text-[14px]">movie</span> [VIEW_VIDEO]
+                                </a>
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://app.melius.com/projects" target="_blank">[PLATFORM]</a>
+</div>
+</div>
+</article>
+</div>
+<!-- Project 5: Solana Alpha Radar -->
+<div class="carousel-item" style="transform: rotateY(180deg) translateZ(600px);">
+<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
+<div class="absolute inset-0 data-overlay"></div>
+<div class="h-48 bg-surface-container-high relative overflow-hidden">
+<img alt="Solana Alpha Radar Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWLUcIKTf6zK5KZqnwKZSzYTQHObOwZXcGXdzjqrwgDeczSb2DN6thRjZIsNUCs5L1bnrsAJNTxpzEVPKJ52ikqKCgDuimbOUEXbmPyTPwIOB6EOlNduznjChoIShAJ5M-RiBflRLlBm4qMnjm_R4jViG7vPmHGSvU0UNUFg7N8_pDQ4BuV9cnneAR4iKULlFBH9cWkvuf7zD2g8iKM2QzUce81ufoQW0L6nOxwIgp87lWFb_2E1fXbcwJmto9m5uPiKewNCWlxDg">
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="p-6 relative z-10 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Alpha Radar</h3>
+<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">SOLANA</span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
+                                Real-time on-chain tracking and analytics dashboard for discovering early opportunities in the Solana ecosystem.
+                            </p>
+<div class="flex flex-col gap-2 pt-6 mt-auto">
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/solana-alpha-radar" target="_blank">
+<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
+                                </a>
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://solana-alpha-radar-six.vercel.app" target="_blank">[LIVE_DEMO]</a>
+</div>
+</div>
+</article>
+</div>
+<!-- Project 6: Jup Alpha Trigger -->
+<div class="carousel-item" style="transform: rotateY(225deg) translateZ(600px);">
+<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
+<div class="absolute inset-0 data-overlay"></div>
+<div class="h-48 bg-surface-container-high relative overflow-hidden">
+<img alt="Jup Alpha Trigger Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0QEOB9a759O0C5SjOzFRrgKwPKM7wt14OR7bw-s-B_h7HsLnJn70DNXYHmMAt2HyzNUqmq1WJf6wteS3UKEiwhpvbQWEnHMgmqtqYBYN72ysmSvaDOcKC2p7VVFjNqXwvbBXBcavka3P9AyzZUqw5j-JpZHiACMfmUcfBci2ZZHQ090Mj9F9KF33xBPbo3sLMrQbotChoZ2Ozav0o5h7kDonGgv5TWxvsr_BqGEXT7ZkC0VBuI-63kuwWCsDxvVgs3W7Drvdnd30">
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="p-6 relative z-10 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Jup Trigger</h3>
+<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">SOL_BOT</span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
+                                Automated execution engine for Jupiter Exchange on Solana, executing precise trades based on alpha signals.
+                            </p>
+<div class="flex flex-col gap-2 pt-6 mt-auto">
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/jup-alpha-trigger" target="_blank">
+<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
+                                </a>
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://jup-alpha-trigger.vercel.app" target="_blank">[LIVE_DEMO]</a>
+</div>
+</div>
+</article>
+</div>
+<!-- Project 7: Web3 TipJar -->
+<div class="carousel-item" style="transform: rotateY(270deg) translateZ(600px);">
+<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
+<div class="absolute inset-0 data-overlay"></div>
+<div class="h-48 bg-surface-container-high relative overflow-hidden">
+<img alt="Web3 TipJar Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3kWFNpn47np8trLiyfvG9aufni5sA7GrOjrdcwDYFo3A1vWwvn_pNybfjFhBmNo50t8zUlddTDIc30UKMfjT29kmK0xOKopsNFno1zXkuMCwFNVLpISKxG51Bxph73UUsNSMksTA6kk5G4sMJBc_-kEBimAjPA8KqsUTdnZKwSvZM1U9TeKrvEQSJ8mMsejhvbK9UzxEB_rCaExG6t0S26kPy2sDGDnBlMo7CVLXnJUkRxfMgniL1_bSiqubiB8mlWhJR1oFtKvs">
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="p-6 relative z-10 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Web3 TipJar</h3>
+<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">BNB_CHAIN</span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
+                                Proof-of-Concept protocol for decentralized micro-donations directly on the BNB Chain.
+                            </p>
+<div class="flex flex-col gap-2 pt-6 mt-auto">
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all w-full" href="https://github.com/Ra9mirez11/TipJar.sol" target="_blank">
+<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
+                                </a>
+<div class="h-[34px] flex items-center justify-center font-label-caps text-[10px] text-on-surface-variant/40 italic">
+                                    [PROTOCOL_NODE_ONLY]
+                                </div>
+</div>
+</div>
+</article>
+</div>
+<!-- Project 8: CzechAI & Custom Tools -->
+<div class="carousel-item" style="transform: rotateY(315deg) translateZ(600px);">
+<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
+<div class="absolute inset-0 data-overlay"></div>
+<div class="h-48 bg-surface-container-high relative overflow-hidden">
+<img alt="CzechAI Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7Yd3s8_YH8LmuZ_HfMKPI6gGIcJ5bjjrETDcy9_zuxK4tr05MpU_t8XnqfYv3I6j1QVY1H7hqvX1R5sBhqFEeX1duzj7W89hHGsIHp_ICi1RLk3VfVDwcI1epeotbhtQoPcoBQX5gskBsavQ5yv57KWz1dwgUuR431eIyKXGyCUc6k1OlPe5jHrj3ncEq3qQCb4ApfyRUHOMC6UQ-br8TdnonL9ZtQw8DQOFgqig3nhm6wLX3rXcp_c11myEZ_wlQOHsOnYMSJ18">
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="p-6 relative z-10 flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">CzechAI Suite</h3>
+<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">PYTHON_AI</span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
+                                Development of 'CzechAI Diamond Suite' Python auto-trainer and the czechai.eu AI platform.
+                            </p>
+<div class="flex flex-col gap-2 pt-6 mt-auto">
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all w-full" href="#">
+<span class="material-symbols-outlined text-[14px]">lock</span> [LOCAL_ACCESS_ONLY]
+                                </a>
+<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://czechai.eu" target="_blank">[PLATFORM]</a>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer / Status Bar -->
+<footer class="bg-surface-container-lowest border-t border-primary-container/20 w-full py-8 px-margin-desktop px-margin-mobile flex flex-col md:flex-row justify-between items-center gap-6 z-[110] relative">
+<div class="flex flex-col gap-1">
+<div class="font-code-sm text-primary-container flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+<span class="">[SYSTEM_ROOT]: STATUS_OK // © 2026 ŠTEFAN BOHUMEL</span>
+</div>
+<span class="font-label-caps text-[10px] text-outline opacity-40">LAST_ENCRYPTION: 14:32:01_UTC</span>
+</div>
+<div class="flex flex-wrap justify-center gap-6 font-code-sm text-code-sm">
+<a class="text-on-surface-variant hover:text-primary-container hover:bg-primary-container/5 px-2 py-1 transition-all duration-300 group" href="contact.html">
+<span class="group-hover:mr-1">&gt;&gt;</span> ENCRYPTED_COMMS
+            </a>
+<a class="text-on-surface-variant hover:text-primary-container hover:bg-primary-container/5 px-2 py-1 transition-all duration-300 group" href="#">
+<span class="group-hover:mr-1">&gt;&gt;</span> PUBLIC_KEY
+            </a>
+<div class="text-primary-container/30 px-2 py-1 cursor-default border-l border-outline-variant/30 ml-2">
+                VER_0.9.8_BETA
+            </div>
+</div>
+</footer>
+<script>
+        const carousel = document.getElementById('carousel');
+        let isDragging = false;
+        let startX;
+        let rotationY = 0;
+        let autoRotateEnabled = true;
+
+        // Interaction handlers
+        window.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            carousel.style.animationPlayState = 'paused';
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            carousel.style.animationPlayState = 'running';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const x = e.clientX;
+            const deltaX = x - startX;
+            rotationY += deltaX * 0.1;
+            carousel.style.transform = `rotateY(${rotationY}deg)`;
+            startX = x;
+        });
+
+        // Touch support
+        window.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            startX = e.touches[0].clientX;
+            carousel.style.animationPlayState = 'paused';
+        });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+            carousel.style.animationPlayState = 'running';
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const x = e.touches[0].clientX;
+            const deltaX = x - startX;
+            rotationY += deltaX * 0.1;
+            carousel.style.transform = `rotateY(${rotationY}deg)`;
+            startX = x;
+        });
+
+        // Log Console Identity
+        console.log("%c SHOWCASE_NODE %c ENCRYPTED_BOOT_SUCCESSFUL ", 
+            "background: #00f5ff; color: #000; font-weight: bold; padding: 4px 8px;", 
+            "background: #131313; color: #00f5ff; border: 1px solid #00f5ff; padding: 4px 8px;");
+    </script>
+</body>
+</html>

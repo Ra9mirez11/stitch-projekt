@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>CONTACT_NODE // BOHUMEL_ARCHITECT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;family=Space+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .scanline {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.05) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        .glitch-border {
+            animation: border-flicker 2s infinite;
+        }
+
+        @keyframes border-flicker {
+            0%, 100% { border-color: #00f5ff; opacity: 1; }
+            50% { border-color: #f1daff; opacity: 0.8; }
+            52% { border-color: #00f5ff; opacity: 1; }
+            54% { border-color: #00f5ff; opacity: 0.5; }
+        }
+
+        .cursor-blink {
+            animation: blink 0.3s steps(2, start) infinite;
+        }
+
+        @keyframes blink {
+            to { visibility: hidden; }
+        }
+
+        .data-leak-animation {
+            background: linear-gradient(90deg, #131313 0%, transparent 50%, #131313 100%);
+        }
+
+        .matrix-bg {
+            mask-image: linear-gradient(to bottom, transparent, black, transparent);
+        }
+
+        input:focus + span, textarea:focus + span {
+            color: #00f5ff;
+            text-shadow: 0 0 8px rgba(0, 245, 255, 0.6);
+        }
+
+        /* Matrix Overlay Styles */
+        #matrix-overlay {
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 100;
+            display: none;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .matrix-text {
+            color: #00f5ff;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            position: absolute;
+            white-space: nowrap;
+            animation: matrix-fall linear infinite;
+        }
+        @keyframes matrix-fall {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(100vh); }
+        }
+        .screen-distortion {
+            animation: distort 0.1s infinite alternate;
+        }
+        @keyframes distort {
+            0% { transform: skew(0deg); filter: hue-rotate(0deg); }
+            50% { transform: skew(2deg); filter: hue-rotate(90deg); }
+            100% { transform: skew(-2deg); filter: hue-rotate(-90deg); }
+        }
+
+        .glow-gold {
+            text-shadow: 0 0 10px rgba(241, 218, 255, 0.5);
+        }
+    </style>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-background": "#e2e2e2", error: "#ffb4ab", "secondary-fixed": "#ffdad6", "inverse-surface": "#e2e2e2", "on-tertiary": "#4b007e", "secondary-fixed-dim": "#ffb4ab", "surface-tint": "#00dce5", "on-tertiary-container": "#9000eb", "tertiary-container": "#eed4ff", "tertiary-fixed": "#f1daff", secondary: "#ffb4ab", "on-secondary": "#690005", "outline-variant": "#3a494a", "on-secondary-container": "#ffe7e4", "primary-fixed": "#63f7ff", surface: "#131313", "on-primary-fixed": "#002021", "on-error-container": "#ffdad6", outline: "#849495", "on-tertiary-fixed-variant": "#6b00b0", "on-surface-variant": "#b9caca", "primary-container": "#00f5ff", "on-primary-fixed-variant": "#004f53", "on-secondary-fixed-variant": "#93000b", "error-container": "#93000a", "primary-fixed-dim": "#00dce5", "on-primary": "#003739", background: "#131313", "surface-dim": "#131313", "surface-container-highest": "#353535", "on-surface": "#e2e2e2", "on-error": "#690005", "surface-container": "#1f1f1f", "surface-bright": "#393939", "inverse-primary": "#00696e", "surface-container-low": "#1b1b1b", "on-primary-container": "#006c71", "inverse-on-surface": "#303030", "surface-container-lowest": "#0e0e0e", "on-secondary-fixed": "#410002", "tertiary-fixed-dim": "#dfb7ff", "secondary-container": "#d70016", "surface-variant": "#353535", "on-tertiary-fixed": "#2d004f", tertiary: "#fff8fd", "surface-container-high": "#2a2a2a", primary: "#e9feff"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, spacing: {"margin-desktop": "48px", gutter: "16px", "margin-mobile": "16px", unit: "4px", "container-max": "1440px"}, fontFamily: {"headline-xl": ["Anton"], "headline-lg-mobile": ["Anton"], "headline-lg": ["Anton"], "label-caps": ["Space Mono"], "code-sm": ["Space Mono"], "body-md": ["JetBrains Mono"], headline: ["Anton"], display: ["Anton"], body: ["Jetbrains Mono"], label: ["Space Mono"]}, fontSize: {"headline-xl": ["96px", {lineHeight: "90%", letterSpacing: "-0.04em", fontWeight: "400"}], "headline-lg-mobile": ["32px", {lineHeight: "100%", fontWeight: "400"}], "headline-lg": ["48px", {lineHeight: "100%", letterSpacing: "-0.02em", fontWeight: "400"}], "label-caps": ["10px", {lineHeight: "100%", fontWeight: "700"}], "code-sm": ["12px", {lineHeight: "140%", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "150%", fontWeight: "400"}]}}}};</script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-hidden">
+<!-- Scanline Overlay -->
+<div class="fixed inset-0 z-50 scanline pointer-events-none"></div>
+<!-- Matrix Transition Overlay -->
+<div class="pointer-events-none" id="matrix-overlay"></div>
+<!-- Navigation Shell -->
+<header class="fixed top-0 w-full z-40 border-b border-outline-variant bg-background/80 backdrop-blur-sm shadow-[0_0_12px_rgba(0,245,255,0.2)] flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4">
+<div class="font-headline-lg-mobile text-headline-lg-mobile text-primary-container animate-pulse" style="opacity: 1;">NEURAL_HUB_V.01</div>
+<nav class="hidden md:flex gap-8 items-center">
+    <a class="text-on-surface-variant font-code-sm hover:text-primary-container transition-all" href="index.html">MATRIX (.env)</a>
+    <a class="text-on-surface-variant font-code-sm hover:text-primary-container transition-all" href="showcase.html">SHOWCASE</a>
+    <a class="text-primary-container font-bold border-b-2 border-primary-container font-code-sm hover:text-primary-fixed hover:skew-x-2 transition-transform" href="contact.html">CONTACT</a>
+</nav>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary-container" data-icon="terminal">terminal</span>
+<span class="material-symbols-outlined text-primary-container" data-icon="sensors">sensors</span>
+<span class="material-symbols-outlined text-primary-container" data-icon="security">security</span>
+</div>
+</header>
+<!-- Side Navigation -->
+<aside class="hidden lg:flex fixed left-0 top-0 h-full w-64 border-r border-outline-variant bg-surface-container-lowest flex-col py-24 space-y-4 z-30">
+<div class="px-6 mb-8">
+<div class="font-label-caps text-label-caps text-secondary">NODE_STATUS</div>
+<div class="text-primary-container font-code-sm">CONNECTED_STABLE</div>
+</div>
+<nav class="flex flex-col gap-1">
+<div class="flex items-center gap-4 text-primary-container bg-primary-container/10 border-l-4 border-primary-container pl-4 py-3 scale-95 duration-100">
+<span class="material-symbols-outlined" data-icon="contact_mail">contact_mail</span>
+<span class="font-label-caps text-label-caps">CONTACT_NODE</span>
+</div>
+</nav>
+<div class="mt-auto px-4 pb-12">
+<button class="flex items-center gap-4 text-on-surface-variant hover:text-error hover:drop-shadow-[0_0_8px_rgba(255,180,171,0.5)] cursor-pointer transition-all w-full outline-none" id="terminate-btn">
+<span class="material-symbols-outlined" data-icon="power_settings_new">power_settings_new</span>
+<span class="font-label-caps text-label-caps">TERMINATE</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="relative min-h-screen w-full lg:pl-64 pt-24 pb-12 px-margin-mobile md:px-margin-desktop bg-black overflow-y-auto">
+<!-- Background Entropy Decoration -->
+<div class="absolute inset-0 z-0 overflow-hidden opacity-20 pointer-events-none">
+<div class="absolute top-1/4 left-1/4 w-96 h-96 border border-primary-container/30 rotate-45 animate-pulse" style="opacity: 1;"></div>
+<div class="absolute bottom-1/4 right-1/4 w-64 h-64 border border-tertiary-fixed/30 -rotate-12 animate-bounce"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-primary-container to-transparent opacity-50"></div>
+<div class="grid grid-cols-12 gap-0 w-full h-full">
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+<div class="col-span-1 border-r border-[#1A1A1A]"></div>
+</div>
+</div>
+<div class="relative z-10 max-w-4xl mx-auto flex flex-col gap-12 py-12">
+<!-- Header Section -->
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<span class="h-[1px] w-12 bg-primary-container"></span>
+<span class="font-label-caps text-label-caps text-primary-container tracking-[0.2em]">NODE_03 // CONTACT_UPLINK</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-background uppercase">Neural<br><span class="text-primary-container">Uplink</span></h1>
+<p class="font-body-md text-on-surface-variant max-w-xl">Establishing a direct communication vector. Select a transmission protocol or inject a custom message packet below.</p>
+</div>
+<!-- Contact Nodes -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<a class="group border border-outline-variant bg-surface-container-lowest/50 backdrop-blur p-4 hover:border-primary-container transition-all flex flex-col gap-2" href="mailto:Bohumel911@gmail.com">
+<div class="flex justify-between items-center">
+<span class="material-symbols-outlined text-primary-container" data-icon="alternate_email">alternate_email</span>
+<span class="font-code-sm text-[10px] text-tertiary-fixed glow-gold">DIRECT_MAIL</span>
+</div>
+<div class="font-label-caps text-label-caps text-on-background mt-2">SYS_MSG_01</div>
+</a>
+<a class="group border border-outline-variant bg-surface-container-lowest/50 backdrop-blur p-4 hover:border-primary-container transition-all flex flex-col gap-2" href="https://www.linkedin.com/in/%C5%A1tefan-bohumel-480865219/" target="_blank">
+<div class="flex justify-between items-center">
+<span class="material-symbols-outlined text-primary-container" data-icon="link">link</span>
+<span class="font-code-sm text-[10px] text-tertiary-fixed glow-gold">LINKEDIN_PROFILE</span>
+</div>
+<div class="font-label-caps text-label-caps text-on-background mt-2">BOHUMEL_02</div>
+</a>
+<a class="group border border-outline-variant bg-surface-container-lowest/50 backdrop-blur p-4 hover:border-primary-container transition-all flex flex-col gap-2" href="https://contra.com/stefan_bohumel_6aml7jz0?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&amp;referrerUsername=stefan_bohumel_6aml7jz0" target="_blank">
+<div class="flex justify-between items-center">
+<span class="material-symbols-outlined text-primary-container" data-icon="work">work</span>
+<span class="font-code-sm text-[10px] text-tertiary-fixed glow-gold">CONTRA_PROFILE</span>
+</div>
+<div class="font-label-caps text-label-caps text-on-background mt-2">WORK_SYNC_03</div>
+</a>
+</div>
+<!-- Inquiry Matrix -->
+<div class="relative group">
+<div class="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-primary-container"></div>
+<div class="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-primary-container"></div>
+<div class="bg-surface-container-lowest/40 backdrop-blur-xl border border-outline-variant p-8 md:p-12 shadow-[0_0_40px_rgba(0,0,0,0.8)] glitch-border">
+<div class="flex justify-between items-start mb-8">
+<div>
+<div class="font-code-sm text-code-sm text-on-surface-variant opacity-50 mb-1">TRANS_ID: 0x8F22A1</div>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-primary-container">INQUIRY_MATRIX</h2>
+</div>
+<div class="text-right hidden md:block">
+<div class="font-code-sm text-code-sm text-tertiary-fixed glow-gold" id="form-status">AWAITING_INPUT</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant">SYS_CORE: ACTIVE</div>
+</div>
+</div>
+<form class="space-y-8" id="contact-form" onsubmit="handleTransmission(event)" data-netlify="true" name="contact">
+<input type="hidden" name="form-name" value="contact">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- IDENT_ID -->
+<div class="relative flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-outline-variant uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary-container"></span> IDENT_ID
+                                </label>
+<input name="name" class="bg-transparent border border-outline focus:border-primary-container focus:ring-0 text-primary-container font-code-sm px-4 py-3 placeholder:text-surface-bright transition-all" placeholder="SUBJECT_NAME" required="" type="text">
+<span class="absolute right-3 bottom-3 font-code-sm text-[10px] text-surface-bright pointer-events-none">REQ*</span>
+</div>
+<!-- UPLINK_ADDR -->
+<div class="relative flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-outline-variant uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary-container"></span> UPLINK_ADDR
+                                </label>
+<input name="email" class="bg-transparent border border-outline focus:border-primary-container focus:ring-0 text-primary-container font-code-sm px-4 py-3 placeholder:text-surface-bright transition-all" placeholder="COMM_CH_01@NULL" required="" type="email">
+<span class="absolute right-3 bottom-3 font-code-sm text-[10px] text-surface-bright pointer-events-none">SECURE</span>
+</div>
+</div>
+<!-- TRANSMISSION_DATA -->
+<div class="relative flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-outline-variant uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary-container"></span> TRANSMISSION_DATA
+                            </label>
+<textarea name="message" class="bg-transparent border border-outline focus:border-primary-container focus:ring-0 text-primary-container font-code-sm px-4 py-3 placeholder:text-surface-bright transition-all resize-none" placeholder="INSERT_ENCRYPTED_DATA_PACKETS_HERE..." required="" rows="4"></textarea>
+<div class="flex justify-between mt-2 font-code-sm text-[10px] text-outline-variant uppercase">
+<span class="">Buffer: 4096KB</span>
+<span class="">Encoding: UTF-8</span>
+</div>
+</div>
+<!-- SUBMIT_SEQUENCE -->
+<div class="pt-4">
+<button class="w-full bg-primary-container text-on-primary py-5 font-headline-lg-mobile tracking-[0.3em] uppercase transition-all active:scale-95 hover:bg-on-background hover:text-black group relative overflow-hidden" type="submit">
+<div class="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+<span class="relative z-10 flex items-center justify-center gap-4" id="submit-text">
+                                    SUBMIT_SEQUENCE
+                                    <span class="material-symbols-outlined animate-pulse" data-icon="rocket_launch" style="opacity: 1;">rocket_launch</span>
+</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Secondary Content: Technical Readouts -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="border border-outline-variant p-4 bg-surface-container-low">
+<div class="font-label-caps text-label-caps text-secondary mb-2">LATENCY</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg-mobile text-on-background">12</span>
+<span class="font-code-sm text-outline-variant">MS</span>
+</div>
+</div>
+<div class="border border-outline-variant p-4 bg-surface-container-low">
+<div class="font-label-caps text-label-caps text-secondary mb-2">PACKET_LOSS</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg-mobile text-on-background">0.00</span>
+<span class="font-code-sm text-outline-variant">%</span>
+</div>
+</div>
+<div class="border border-outline-variant p-4 bg-surface-container-low">
+<div class="font-label-caps text-label-caps text-secondary mb-2">UP_TIME</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg-mobile text-on-background">99.9</span>
+<span class="font-code-sm text-outline-variant">PERCENT</span>
+</div>
+</div>
+</div>
+<!-- Data Leak Component -->
+<div class="relative h-24 overflow-hidden border-t border-[#1A1A1A] mt-12 flex items-center">
+<div class="absolute inset-0 data-leak-animation z-10 pointer-events-none"></div>
+<div class="font-code-sm text-primary-container/20 whitespace-nowrap animate-[marquee_20s_linear_infinite]">
+                    0x442 ERROR_DUMP: NODE_3_CONNECTED // 0x442 ERROR_DUMP: NODE_3_CONNECTED // 0x442 ERROR_DUMP: NODE_3_CONNECTED // 0x442 ERROR_DUMP: NODE_3_CONNECTED // 0x442 ERROR_DUMP: NODE_3_CONNECTED // 0x442 ERROR_DUMP: NODE_3_CONNECTED // 0x442 ERROR_DUMP: NODE_3_CONNECTED
+                </div>
+<style>
+                    @keyframes marquee {
+                        from { transform: translateX(0); }
+                        to { transform: translateX(-50%); }
+                    }
+                </style>
+</div>
+</div>
+</main>
+<!-- Footer System Status -->
+<footer class="fixed bottom-0 w-full z-40 border-t border-secondary-container bg-surface-container-low shadow-[0_-4px_12px_rgba(215,0,22,0.2)] h-8 flex flex-row justify-between items-center px-margin-mobile md:px-margin-desktop overflow-hidden">
+<div class="flex items-center gap-6">
+<div class="font-code-sm text-code-sm text-secondary-fixed font-bold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-ping"></span>
+                COMMS_STATUS: ENCRYPTED
+            </div>
+<div class="hidden md:block font-code-sm text-code-sm text-outline-variant">
+                ENCRYPTION_LEVEL: <span class="text-secondary">OMEGA</span>
+</div>
+</div>
+<div class="flex gap-4">
+<a class="text-outline-variant font-code-sm hover:text-error transition-colors" href="#">LOG_DUMP</a>
+<a class="text-outline-variant font-code-sm hover:text-error transition-colors" href="#">ERROR_BYPASS</a>
+<span class="text-secondary-fixed font-label-caps text-label-caps uppercase hidden sm:inline">SYSTEM_LOG_STREAM_v4.4.2 [LIVE]</span>
+</div>
+</footer>
+<!-- Interactive Cursor Block -->
+<div class="fixed top-0 left-0 w-4 h-6 bg-primary-container/50 pointer-events-none z-[100] cursor-blink transition-transform duration-75 mix-blend-difference hidden md:block" id="custom-cursor" style="transform: translate(570px, 9px);"></div>
+<script>
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.getElementById('custom-cursor');
+            if (cursor) {
+                cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+            }
+        });
+
+        // Simulating flickering elements
+        setInterval(() => {
+            const flickeringElements = document.querySelectorAll('.animate-pulse');
+            flickeringElements.forEach(el => {
+                if (Math.random() > 0.95) {
+                    el.style.opacity = '0.2';
+                    setTimeout(() => el.style.opacity = '1', 50);
+                }
+            });
+        }, 100);
+
+        // Form handling simulation
+        function handleTransmission(event) {
+            event.preventDefault();
+            const statusEl = document.getElementById('form-status');
+            const submitText = document.getElementById('submit-text');
+            const form = document.getElementById('contact-form');
+            
+            statusEl.textContent = 'TRANSMITTING...';
+            statusEl.classList.add('animate-pulse');
+            submitText.innerHTML = 'ENCRYPTING... <span class="material-symbols-outlined animate-spin" data-icon="sync">sync</span>';
+            
+            const formData = new FormData(form);
+            fetch("/", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams(formData).toString()
+            })
+            .then(response => {
+                statusEl.classList.remove('animate-pulse');
+                if (response.ok) {
+                    statusEl.textContent = 'SEQUENCE_SUCCESS';
+                    statusEl.classList.replace('text-tertiary-fixed', 'text-primary-container');
+                    submitText.innerHTML = 'DATA_DUMP_COMPLETE <span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>';
+                    form.reset();
+                } else {
+                    statusEl.textContent = 'TRANSMIT_ERROR';
+                    statusEl.classList.replace('text-tertiary-fixed', 'text-error');
+                    submitText.innerHTML = 'RETRY_SEQUENCE <span class="material-symbols-outlined" data-icon="error">error</span>';
+                }
+                
+                setTimeout(() => {
+                    statusEl.textContent = 'AWAITING_INPUT';
+                    statusEl.classList.replace('text-primary-container', 'text-tertiary-fixed');
+                    statusEl.classList.replace('text-error', 'text-tertiary-fixed');
+                    submitText.innerHTML = 'SUBMIT_SEQUENCE <span class="material-symbols-outlined animate-pulse" data-icon="rocket_launch">rocket_launch</span>';
+                }, 3000);
+            })
+            .catch(error => {
+                statusEl.classList.remove('animate-pulse');
+                statusEl.textContent = 'CONNECTION_FAIL';
+                statusEl.classList.replace('text-tertiary-fixed', 'text-error');
+                submitText.innerHTML = 'RETRY_SEQUENCE <span class="material-symbols-outlined" data-icon="error">error</span>';
+                
+                setTimeout(() => {
+                    statusEl.textContent = 'AWAITING_INPUT';
+                    statusEl.classList.replace('text-primary-container', 'text-tertiary-fixed');
+                    statusEl.classList.replace('text-error', 'text-tertiary-fixed');
+                    submitText.innerHTML = 'SUBMIT_SEQUENCE <span class="material-symbols-outlined animate-pulse" data-icon="rocket_launch">rocket_launch</span>';
+                }, 3000);
+            });
+        }
+
+        // Matrix Transition Logic
+        const terminateBtn = document.getElementById('terminate-btn');
+        const matrixOverlay = document.getElementById('matrix-overlay');
+
+        function createMatrixEffect() {
+            matrixOverlay.style.display = 'block';
+            document.body.classList.add('screen-distortion');
+            
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&*';
+            const columnCount = Math.floor(window.innerWidth / 20);
+
+            for (let i = 0; i < columnCount; i++) {
+                setTimeout(() => {
+                    const span = document.createElement('span');
+                    span.className = 'matrix-text';
+                    span.style.left = `${i * 20}px`;
+                    span.style.animationDuration = `${Math.random() * 0.5 + 0.3}s`;
+                    
+                    let textContent = '';
+                    for (let j = 0; j < 20; j++) {
+                        textContent += characters.charAt(Math.floor(Math.random() * characters.length)) + '<br>';
+                    }
+                    span.innerHTML = textContent;
+                    matrixOverlay.appendChild(span);
+                }, Math.random() * 300);
+            }
+        }
+
+        if (terminateBtn) {
+            terminateBtn.addEventListener('click', () => {
+                createMatrixEffect();
+                const flash = document.createElement('div');
+                flash.className = 'fixed inset-0 bg-primary-container/20 z-[110] pointer-events-none';
+                document.body.appendChild(flash);
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                    console.log('Redirecting...');
+                }, 800);
+            });
+        }
+    </script>
+</body>
+</html>
