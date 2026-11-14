@@ -61,57 +61,64 @@
             overflow-x: hidden;
         }
 
-        /* 3D Carousel Engine */
-        .carousel-scene {
-            perspective: 2200px;
+        /* ==========================================================================
+           TACTICAL 3D COVERFLOW STAGE (ZERO POSITIVE-Z OVERLAP, 100% FLAT CENTER CARD)
+           ========================================================================== */
+        .coverflow-scene {
+            perspective: 1600px;
             width: 100%;
-            height: 610px;
+            height: 540px;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: visible;
+            overflow: hidden;
             user-select: none;
-            position: relative;
         }
 
-        .carousel-container {
-            width: 330px;
-            height: 510px;
+        .coverflow-track {
+            width: 380px;
+            height: 500px;
             position: relative;
             transform-style: preserve-3d;
-            will-change: transform;
         }
 
-        .carousel-item {
+        @media (max-width: 640px) {
+            .coverflow-track {
+                width: 320px;
+                height: 490px;
+            }
+        }
+
+        .coverflow-slot {
             position: absolute;
-            width: 330px;
-            height: 510px;
-            left: 0;
-            top: 0;
-            backface-visibility: hidden;
+            inset: 0;
             transform-style: preserve-3d;
-            transition: transform 0.65s cubic-bezier(0.23, 1, 0.32, 1), filter 0.4s ease;
+            transition:
+                transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                filter 0.55s ease;
+            will-change: transform, opacity, filter;
         }
 
         /* Brutalist Cyber-Glass Card Style */
         .project-card-glass {
-            background: linear-gradient(165deg, rgba(31, 31, 31, 0.88) 0%, rgba(16, 16, 16, 0.94) 100%);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(0, 245, 255, 0.22);
-            box-shadow: 0 14px 36px -10px rgba(0, 0, 0, 0.7), 0 0 22px rgba(0, 245, 255, 0.05);
+            background: linear-gradient(165deg, rgba(26, 28, 29, 0.96) 0%, rgba(14, 15, 15, 0.98) 100%);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 245, 255, 0.25);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 20px rgba(0, 245, 255, 0.05);
             overflow: hidden;
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
         }
 
         .project-card-glass:hover {
-            border-color: rgba(0, 245, 255, 0.9);
-            box-shadow: 0 0 42px rgba(0, 245, 255, 0.22), inset 0 0 18px rgba(0, 245, 255, 0.06);
-            transform: translateY(-4px);
+            border-color: rgba(0, 245, 255, 0.85);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 36px rgba(0, 245, 255, 0.2);
         }
 
-        .project-card-active {
-            border-color: rgba(0, 245, 255, 0.95);
-            box-shadow: 0 0 48px rgba(0, 245, 255, 0.28), inset 0 0 20px rgba(0, 245, 255, 0.08);
+        .project-card-center {
+            border-color: #00f5ff !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 42px rgba(0, 245, 255, 0.24), inset 0 0 18px rgba(0, 245, 255, 0.06) !important;
         }
 
         /* Corner Target Reticles */
@@ -120,22 +127,26 @@
         .hud-corner-bl,
         .hud-corner-br {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-color: #00f5ff;
             pointer-events: none;
             z-index: 25;
-            opacity: 0.55;
+            opacity: 0.65;
             transition: opacity 0.25s ease, width 0.25s ease, height 0.25s ease;
         }
 
         .project-card-glass:hover .hud-corner-tl,
         .project-card-glass:hover .hud-corner-tr,
         .project-card-glass:hover .hud-corner-bl,
-        .project-card-glass:hover .hud-corner-br {
+        .project-card-glass:hover .hud-corner-br,
+        .project-card-center .hud-corner-tl,
+        .project-card-center .hud-corner-tr,
+        .project-card-center .hud-corner-bl,
+        .project-card-center .hud-corner-br {
             opacity: 1;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
         }
 
         .hud-corner-tl { top: 6px; left: 6px; border-top: 2px solid #00f5ff; border-left: 2px solid #00f5ff; }
@@ -147,10 +158,10 @@
         .data-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(transparent 50%, rgba(0, 220, 229, 0.05) 50%);
+            background: linear-gradient(transparent 50%, rgba(0, 220, 229, 0.04) 50%);
             background-size: 100% 4px;
             pointer-events: none;
-            opacity: 0.3;
+            opacity: 0.25;
         }
 
         .chromatic-glitch:hover {
@@ -170,7 +181,6 @@
 
         .stagger-1 { animation-delay: 0.1s; }
         .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
 
         /* Background Visuals */
         .circuit-bg {
@@ -178,12 +188,19 @@
             background-size: 24px 24px;
         }
 
-        /* Filter Pill Active State */
+        /* Filter & Node Pill Active State */
         .filter-btn-active {
             background-color: #00f5ff !important;
             color: #002021 !important;
             border-color: #00f5ff !important;
-            box-shadow: 0 0 18px rgba(0, 245, 255, 0.35);
+            box-shadow: 0 0 16px rgba(0, 245, 255, 0.35);
+        }
+
+        .node-pill-active {
+            background-color: rgba(0, 245, 255, 0.18) !important;
+            color: #00f5ff !important;
+            border-color: #00f5ff !important;
+            box-shadow: 0 0 12px rgba(0, 245, 255, 0.25);
         }
     </style>
     <script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {surface: "#131313", "on-primary-fixed": "#002021", "on-error-container": "#ffdad6", outline: "#849495", "outline-variant": "#3a494a", "on-secondary-container": "#ffe7e4", "primary-fixed": "#63f7ff", "on-surface-variant": "#b9caca", "primary-container": "#00f5ff", "on-tertiary": "#4b007e", "on-background": "#e2e2e2", primary: "#e9feff", background: "#131313", "surface-container": "#1f1f1f", "on-surface": "#e2e2e2", "surface-bright": "#393939", "surface-container-low": "#1b1b1b", "on-tertiary-fixed-variant": "#6b00b0", "on-tertiary-container": "#9000eb", "secondary-container": "#d70016", "on-error": "#690005", "on-primary-fixed-variant": "#004f53", "primary-fixed-dim": "#00dce5", "tertiary-container": "#eed4ff", "inverse-surface": "#e2e2e2", "on-secondary-fixed-variant": "#93000b", secondary: "#ffb4ab", "on-secondary": "#690005", "tertiary-fixed": "#f1daff", "surface-container-high": "#2a2a2a", error: "#ffb4ab", "on-primary": "#003739", "inverse-primary": "#00696e", "surface-variant": "#353535", "surface-tint": "#00dce5", "error-container": "#93000a", "on-tertiary-fixed": "#2d004f", "secondary-fixed": "#ffdad6", "surface-container-highest": "#353535", "on-secondary-fixed": "#410002", "inverse-on-surface": "#303030", "surface-dim": "#131313", tertiary: "#fff8fd", "surface-container-lowest": "#0e0e0e", "tertiary-fixed-dim": "#dfb7ff", "on-primary-container": "#006c71", "secondary-fixed-dim": "#ffb4ab"}, fontFamily: {"label-caps": ["Space Mono"], "headline-xl": ["Anton"], "headline-lg": ["Anton"], "body-md": ["JetBrains Mono"], "code-sm": ["Space Mono"], headline: ["Anton"], display: ["Anton"], body: ["JetBrains Mono"], label: ["Space Mono"]}, fontSize: {"label-caps": ["10px", {lineHeight: "100%", fontWeight: "700"}], "headline-xl": ["96px", {lineHeight: "90%", letterSpacing: "-0.04em", fontWeight: "400"}], "headline-lg": ["48px", {lineHeight: "100%", letterSpacing: "-0.02em", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "150%", fontWeight: "400"}], "code-sm": ["12px", {lineHeight: "140%", fontWeight: "400"}]}, spacing: {unit: "4px", "container-max": "1440px", gutter: "16px", "margin-mobile": "16px", "margin-desktop": "48px"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}}}};</script>
@@ -193,7 +210,7 @@
 <div class="void-noise"></div>
 
 <!-- Header / Nav -->
-<nav class="fixed top-0 left-0 w-full z-[110] border-b border-primary-container/10 bg-background/80 backdrop-blur-md">
+<nav class="fixed top-0 left-0 w-full z-[110] border-b border-primary-container/10 bg-background/85 backdrop-blur-md">
     <div class="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-6 flex justify-between items-center">
         <div class="flex flex-col">
             <span class="font-headline-lg text-2xl tracking-tighter text-primary-container">Project_showcase</span>
@@ -205,83 +222,87 @@
             <a class="text-on-surface-variant hover:text-primary-container transition-colors" href="contact.html">CONTACT (Terminal)</a>
         </div>
         <div class="flex items-center gap-4">
-            <div class="h-2 w-2 rounded-full bg-primary-container shadow-[0_0_8px_#00f5ff] animate-pulse" id="sync-indicator-dot"></div>
+            <div class="h-2 w-2 rounded-full bg-primary-container shadow-[0_0_8px_#00f5ff] animate-pulse"></div>
             <span class="font-label-caps text-[10px] text-primary-container/70" id="sync-status-label">GITHUB_SYNC: TOPIC["portfolio"]</span>
         </div>
     </div>
 </nav>
 
 <!-- Main Content -->
-<main class="relative z-10 pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto">
+<main class="relative z-10 pt-28 pb-24 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto">
     <!-- Hero Title Section -->
-    <header class="mb-8 text-center">
-        <h1 class="font-headline-xl text-5xl sm:text-7xl md:text-headline-xl text-on-background mb-4 staggered-load">
+    <header class="mb-6 text-center">
+        <h1 class="font-headline-xl text-5xl sm:text-7xl md:text-headline-xl text-on-background mb-3 staggered-load">
             <span class="stagger-1 inline-block">[SYSTEM_SHOWCASE]</span>
         </h1>
-        <div class="flex flex-col items-center gap-4 staggered-load">
-            <p class="font-code-sm text-on-surface-variant max-w-2xl stagger-2">
-                DECRYPTING ARCHIVED ASSETS... DUAL-ENGINE 3D ORBITAL &amp; TACTICAL COMMAND MATRIX ENGAGED.
-                PUBLIC READ-ONLY GITHUB TELEMETRY LINKED TO TOPIC <span class="text-primary-container">[portfolio]</span>.
-            </p>
-            <!-- Top Telemetry & View Switcher Bar -->
-            <div class="stagger-3 flex flex-wrap items-center justify-center gap-3 mt-2 bg-surface-container-low/90 border border-primary-container/20 px-4 py-2.5">
-                <div class="flex items-center gap-2 font-label-caps text-[10px] text-primary-container pr-3 border-r border-primary-container/20">
-                    <span class="material-symbols-outlined text-[14px]">radar</span>
-                    <span id="hud-total-counter">NODES_ONLINE: 11</span>
-                </div>
-                <div class="flex items-center gap-2 font-label-caps text-[10px] text-on-surface-variant pr-3 border-r border-primary-container/20">
-                    <span class="material-symbols-outlined text-[14px] text-primary-container">verified_user</span>
-                    <span>API_MODE: ZERO_KEY_READONLY</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button class="font-label-caps text-[10px] px-2.5 py-1 border border-primary-container/40 text-primary-container hover:bg-primary-container/10 transition-all filter-btn-active" id="mode-dual-btn" type="button">
-                        [3D_ORBIT + MATRIX]
-                    </button>
-                    <button class="font-label-caps text-[10px] px-2.5 py-1 border border-primary-container/30 text-on-surface-variant hover:text-primary-container hover:border-primary-container/60 transition-all" id="mode-grid-btn" type="button">
-                        [MATRIX_ONLY]
-                    </button>
-                </div>
-            </div>
-        </div>
+        <p class="font-code-sm text-on-surface-variant max-w-2xl mx-auto stagger-2">
+            TACTICAL 3D SPOTLIGHT DECK &amp; COMMAND MATRIX. CLICK SIDE NODES OR USE HUD CONTROLS TO INSPECT.
+            AUTO-SYNCHRONIZED WITH GITHUB TOPIC <span class="text-primary-container">[portfolio]</span>.
+        </p>
     </header>
 
-    <!-- 3D Orbital Wrapper -->
-    <div id="orbital-section-wrapper">
-        <!-- Tactical HUD Controls for 3D Carousel -->
-        <div class="flex flex-wrap items-center justify-between gap-4 max-w-4xl mx-auto mb-2 px-4 py-2.5 bg-surface-container-lowest/80 border border-primary-container/20 backdrop-blur-sm">
-            <div class="flex items-center gap-2 font-code-sm text-xs text-primary-container">
-                <span class="material-symbols-outlined text-[16px]">deployed_code</span>
-                <span id="active-node-readout">ACTIVE_NODE: 01 // REPOXRAY (RXRAY)</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <button class="font-label-caps text-[10px] px-3 py-1.5 border border-primary-container/40 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all flex items-center gap-1" id="prev-node-btn" type="button">
-                    <span class="material-symbols-outlined text-[12px]">chevron_left</span> PREV_NODE
-                </button>
-                <button class="font-label-caps text-[10px] px-3 py-1.5 border border-primary-container/40 bg-primary-container/10 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all" id="toggle-orbit-btn" type="button">
-                    [ORBIT: ACTIVE]
-                </button>
-                <button class="font-label-caps text-[10px] px-3 py-1.5 border border-primary-container/40 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all flex items-center gap-1" id="next-node-btn" type="button">
-                    NEXT_NODE <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-                </button>
-            </div>
+    <!-- 3D Coverflow Spotlight Stage (Zero overlapping bars behind cards) -->
+    <section class="mb-14" id="spotlight-section">
+        <div class="coverflow-scene" id="coverflow-scene">
+            <!-- Left Floating Arrow -->
+            <button
+                aria-label="Previous Project"
+                class="hidden md:flex items-center justify-center w-12 h-24 border border-primary-container/40 bg-background/85 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all z-40 absolute left-2 lg:left-8 top-1/2 -translate-y-1/2 backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.8)]"
+                id="stage-prev-btn"
+                type="button"
+            >
+                <span class="material-symbols-outlined text-2xl">chevron_left</span>
+            </button>
+
+            <!-- 3D Coverflow Cards Track -->
+            <div class="coverflow-track" id="coverflow-track"></div>
+
+            <!-- Right Floating Arrow -->
+            <button
+                aria-label="Next Project"
+                class="hidden md:flex items-center justify-center w-12 h-24 border border-primary-container/40 bg-background/85 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all z-40 absolute right-2 lg:right-8 top-1/2 -translate-y-1/2 backdrop-blur-md shadow-[0_0_20px_rgba(0,0,0,0.8)]"
+                id="stage-next-btn"
+                type="button"
+            >
+                <span class="material-symbols-outlined text-2xl">chevron_right</span>
+            </button>
         </div>
 
-        <!-- 3D Carousel Section -->
-        <section class="carousel-scene py-8" id="carousel-scene">
-            <div class="carousel-container" id="carousel"></div>
-        </section>
-    </div>
+        <!-- Clean Docked Control Console BELOW the 3D Stage (Never overlapped by cards) -->
+        <div class="max-w-4xl mx-auto mt-4 bg-surface-container-lowest/95 border border-primary-container/25 px-4 py-3 flex flex-col gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 font-code-sm text-xs text-primary-container">
+                    <span class="material-symbols-outlined text-[16px]">radar</span>
+                    <span id="active-node-readout">FOCUSED_NODE: 01 / 11 // REPOXRAY (RXRAY)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="font-label-caps text-[10px] px-3 py-1.5 border border-primary-container/40 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all" id="prev-node-btn" type="button">
+                        [ &lt; PREV ]
+                    </button>
+                    <button class="font-label-caps text-[10px] px-3 py-1.5 border border-primary-container/40 bg-primary-container/10 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all" id="toggle-orbit-btn" type="button">
+                        [ AUTO_CYCLE: ON ]
+                    </button>
+                    <button class="font-label-caps text-[10px] px-3 py-1.5 border border-primary-container/40 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all" id="next-node-btn" type="button">
+                        [ NEXT &gt; ]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Direct 1-Click Node Selector Strip -->
+            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-primary-container/15" id="node-selector-strip"></div>
+        </div>
+    </section>
 
     <!-- Tactical Command Matrix Grid Section -->
-    <section class="mt-16 pt-12 border-t border-primary-container/20" id="matrix-section">
+    <section class="pt-12 border-t border-primary-container/20" id="matrix-section">
         <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
             <div>
                 <div class="flex items-center gap-2 text-primary-container font-label-caps text-[10px] tracking-[0.25em] mb-2">
                     <span class="material-symbols-outlined text-[14px]">grid_view</span>
-                    <span>TACTICAL_COMMAND_MATRIX // FULL_INDEX</span>
+                    <span id="hud-total-counter">TACTICAL_COMMAND_MATRIX // 11 NODES ONLINE</span>
                 </div>
                 <h2 class="font-headline-lg text-3xl md:text-4xl text-on-background tracking-tight">
-                    DEPLOYED_SYSTEMS &amp; GITHUB_PORTFOLIO_NODES
+                    ALL_DEPLOYED_PROJECTS &amp; GITHUB_PORTFOLIO
                 </h2>
             </div>
 
@@ -328,7 +349,7 @@
             <span class="material-symbols-outlined text-[14px]">terminal</span>
             <span>[SYSTEM_ROOT]: STATUS_OK // © 2026 ŠTEFAN BOHUMEL</span>
         </div>
-        <span class="font-label-caps text-[10px] text-outline opacity-40" id="footer-sync-timestamp">LAST_ENCRYPTION: LIVE_TELEMETRY_ACTIVE</span>
+        <span class="font-label-caps text-[10px] text-outline opacity-40">LAST_ENCRYPTION: LIVE_TELEMETRY_ACTIVE</span>
     </div>
     <div class="flex flex-wrap justify-center gap-6 font-code-sm text-code-sm">
         <a class="text-on-surface-variant hover:text-primary-container hover:bg-primary-container/5 px-2 py-1 transition-all duration-300 group" href="contact.html">
@@ -338,14 +359,14 @@
             <span class="group-hover:mr-1">&gt;&gt;</span> GITHUB_ARCHIVE
         </a>
         <div class="text-primary-container/30 px-2 py-1 cursor-default border-l border-outline-variant/30 ml-2">
-            VER_2.0_AUTOSYNC
+            VER_2.1_COVERFLOW
         </div>
     </div>
 </footer>
 
 <script>
     // ============================================================================
-    // 1. CURATED CORE PROJECT REGISTRY (INSTANT 0ms RENDER + FALLBACK)
+    // 1. CURATED CORE PROJECT REGISTRY (ALL 11 PROJECTS PERMANENTLY PRESERVED)
     // ============================================================================
     const CURATED_PROJECTS = [
         {
@@ -515,7 +536,6 @@
         }
     ];
 
-    // Repositories to exclude from becoming standalone cards if tagged
     const IGNORED_REPOS = new Set(['stitch-projekt', 'ra9mirez11']);
 
     // ============================================================================
@@ -562,30 +582,22 @@
     }
 
     // ============================================================================
-    // 3. STATE & RENDERING ENGINE (3D CAROUSEL + TACTICAL MATRIX GRID)
+    // 3. STATE & RENDERING ENGINE (TACTICAL COVERFLOW + COMMAND MATRIX)
     // ============================================================================
     let allProjects = CURATED_PROJECTS.map((p) => ({ ...p, category: [...p.category], tags: [...p.tags] }));
+    let activeIndex = 0;
+    let autoCycle = true;
+    let isStageHovered = false;
     let activeFilter = 'ALL';
     let searchQuery = '';
 
-    // 3D Carousel State
-    const carouselEl = document.getElementById('carousel');
-    const carouselSceneEl = document.getElementById('carousel-scene');
+    const coverflowTrackEl = document.getElementById('coverflow-track');
+    const coverflowSceneEl = document.getElementById('coverflow-scene');
     const activeNodeReadoutEl = document.getElementById('active-node-readout');
     const hudTotalCounterEl = document.getElementById('hud-total-counter');
-    let rotationY = 0;
-    let targetRotationY = null;
-    let autoOrbit = true;
-    let isHoverPaused = false;
-    let isDragging = false;
-    let dragStartX = 0;
+    const nodeSelectorStripEl = document.getElementById('node-selector-strip');
 
-    function computeCarouselRadius(count) {
-        // Scales radius dynamically with card count so 11, 15, or 20 cards never overlap
-        return Math.max(700, Math.round((count * 355) / (2 * Math.PI)));
-    }
-
-    function buildCardInnerHtml(project, index, total, isCarouselCard) {
+    function buildCardInnerHtml(project, index, total, isStageCard) {
         const nodeIndex = String(index + 1).padStart(2, '0');
         const safeTitle = escapeHtml(project.title);
         const safeBadge = escapeHtml(project.badge);
@@ -599,29 +611,29 @@
         const secondaryLabel = escapeHtml((project.secondaryLink && project.secondaryLink.label) || '[LIVE_DEMO]');
 
         const tagsHtml = (project.tags || []).slice(0, 4).map((t) => (
-            `<span class="font-code-sm text-[9px] text-primary-container/80 bg-primary-container/5 border border-primary-container/20 px-1.5 py-0.5">${escapeHtml(t)}</span>`
+            `<span class="font-code-sm text-[10px] text-primary-container/90 bg-primary-container/10 border border-primary-container/25 px-2 py-0.5">${escapeHtml(t)}</span>`
         )).join('');
 
         const syncBadgeHtml = project.githubSynced
-            ? `<span class="font-label-caps text-[8px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-1.5 py-0.5 flex items-center gap-1">
+            ? `<span class="font-label-caps text-[9px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-2 py-0.5 flex items-center gap-1.5">
                    <span class="h-1.5 w-1.5 rounded-full bg-primary-container animate-pulse"></span>GH_PORTFOLIO${project.stars > 0 ? ` ★${Number(project.stars)}` : ''}
                </span>`
-            : `<span class="font-label-caps text-[8px] text-on-surface-variant/70 border border-outline-variant/40 px-1.5 py-0.5">${safeStatus}</span>`;
+            : `<span class="font-label-caps text-[9px] text-on-surface-variant/80 border border-outline-variant/40 px-2 py-0.5">${safeStatus}</span>`;
 
         const secondaryActionHtml = secondaryUrl
-            ? `<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="${secondaryUrl}" rel="noopener noreferrer" target="_blank">
+            ? `<a class="flex items-center justify-center gap-1.5 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-3 py-2.5 hover:brightness-110 transition-all font-bold" href="${secondaryUrl}" rel="noopener noreferrer" target="_blank">
                    <span>${secondaryLabel}</span>
                    <span class="material-symbols-outlined text-[13px]">north_east</span>
                </a>`
-            : `<div class="h-[34px] flex items-center justify-center font-label-caps text-[10px] text-on-surface-variant/40 border border-outline-variant/20 italic">
+            : `<div class="h-[36px] flex items-center justify-center font-label-caps text-[10px] text-on-surface-variant/40 border border-outline-variant/20 italic">
                    ${secondaryLabel}
                </div>`;
 
-        const focusOrbitalBtnHtml = !isCarouselCard
-            ? `<button class="focus-3d-btn font-label-caps text-[9px] text-primary-container/70 hover:text-primary-container flex items-center gap-1 transition-colors" data-index="${index}" type="button">
-                   <span class="material-symbols-outlined text-[13px]">3d_rotation</span> [LOCK_IN_3D]
+        const bottomMetaLeft = !isStageCard
+            ? `<button class="focus-stage-btn font-label-caps text-[9px] text-primary-container/80 hover:text-primary-container flex items-center gap-1 transition-colors" data-index="${index}" type="button">
+                   <span class="material-symbols-outlined text-[13px]">center_focus_strong</span> [FOCUS_ON_STAGE]
                </button>`
-            : `<span class="font-label-caps text-[9px] text-primary-container/50">ORBIT_${nodeIndex}/${String(total).padStart(2, '0')}</span>`;
+            : `<span class="font-label-caps text-[9px] text-primary-container/70">SLOT_${nodeIndex}_OF_${String(total).padStart(2, '0')}</span>`;
 
         return `
             <article class="project-card-glass rounded-lg flex flex-col h-full group relative" data-node-index="${index}">
@@ -632,40 +644,40 @@
                 <div class="absolute inset-0 data-overlay"></div>
 
                 <!-- Image Header with HUD Telemetry Bar -->
-                <div class="h-44 bg-surface-container-high relative overflow-hidden shrink-0">
-                    <div class="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-3 py-1.5 bg-background/80 backdrop-blur-sm border-b border-primary-container/20">
-                        <span class="font-code-sm text-[9px] text-primary-container tracking-widest">NODE_${nodeIndex}</span>
+                <div class="h-48 bg-surface-container-high relative overflow-hidden shrink-0">
+                    <div class="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-3.5 py-2 bg-background/90 backdrop-blur-md border-b border-primary-container/20">
+                        <span class="font-code-sm text-[10px] text-primary-container font-bold tracking-widest">NODE_${nodeIndex}</span>
                         ${syncBadgeHtml}
                     </div>
-                    <img alt="${safeTitle} Preview" class="w-full h-full object-cover opacity-65 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" loading="lazy" src="${safeImg}">
-                    <div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent"></div>
+                    <img alt="${safeTitle} Preview" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" loading="lazy" src="${safeImg}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#121313] via-transparent to-transparent"></div>
                 </div>
 
                 <!-- Card Body -->
-                <div class="p-5 relative z-10 flex flex-col flex-grow">
-                    <div class="flex justify-between items-start gap-2 mb-2.5">
-                        <h3 class="font-headline-lg text-xl text-primary chromatic-glitch leading-tight">${safeTitle}</h3>
-                        <span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/30 px-2 py-0.5 shrink-0">${safeBadge}</span>
+                <div class="p-6 relative z-10 flex flex-col flex-grow">
+                    <div class="flex justify-between items-start gap-3 mb-3">
+                        <h3 class="font-headline-lg text-2xl text-primary chromatic-glitch leading-tight tracking-wide">${safeTitle}</h3>
+                        <span class="font-label-caps text-[10px] bg-primary-container/15 text-primary-container border border-primary-container/35 px-2.5 py-1 shrink-0">${safeBadge}</span>
                     </div>
 
-                    <p class="font-body-md text-xs text-on-surface-variant mb-4 flex-grow leading-relaxed line-clamp-3">
+                    <p class="font-body-md text-[13px] text-[#cfdadb] mb-5 flex-grow leading-relaxed">
                         ${safeDesc}
                     </p>
 
                     <!-- Tech Stack Micro-Tags -->
-                    <div class="flex flex-wrap gap-1.5 mb-4">
+                    <div class="flex flex-wrap gap-1.5 mb-5">
                         ${tagsHtml}
                     </div>
 
                     <!-- Card Actions -->
-                    <div class="flex flex-col gap-2 pt-3 border-t border-primary-container/15 mt-auto">
-                        <div class="flex items-center justify-between mb-0.5">
-                            ${focusOrbitalBtnHtml}
-                            <span class="font-code-sm text-[9px] text-outline/60">${safeStatus}</span>
+                    <div class="flex flex-col gap-2.5 pt-3 border-t border-primary-container/20 mt-auto">
+                        <div class="flex items-center justify-between">
+                            ${bottomMetaLeft}
+                            <span class="font-code-sm text-[9px] text-outline/70">${safeStatus}</span>
                         </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <a class="flex items-center justify-center gap-1.5 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="${primaryUrl || '#'}" ${primaryUrl && primaryUrl !== '#' ? 'rel="noopener noreferrer" target="_blank"' : ''}>
-                                <span class="material-symbols-outlined text-[13px]">${primaryIcon}</span>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <a class="flex items-center justify-center gap-1.5 font-label-caps text-[10px] text-primary-container border border-primary-container/40 px-3 py-2.5 hover:bg-primary-container/15 transition-all" href="${primaryUrl || '#'}" ${primaryUrl && primaryUrl !== '#' ? 'rel="noopener noreferrer" target="_blank"' : ''}>
+                                <span class="material-symbols-outlined text-[14px]">${primaryIcon}</span>
                                 <span>${primaryLabel}</span>
                             </a>
                             ${secondaryActionHtml}
@@ -676,22 +688,136 @@
         `;
     }
 
-    function renderCarousel() {
-        const count = allProjects.length;
-        const radius = computeCarouselRadius(count);
-        const angleStep = 360 / count;
+    // Compute signed circular distance in [-floor(N/2), +floor(N/2)]
+    function getCircularOffset(index, current, total) {
+        let diff = index - current;
+        const half = total / 2;
+        while (diff > half) diff -= total;
+        while (diff < -half) diff += total;
+        return diff;
+    }
 
-        carouselEl.innerHTML = allProjects.map((project, idx) => {
-            const itemAngle = (idx * angleStep).toFixed(2);
+    function updateCoverflowPositions() {
+        const count = allProjects.length;
+        if (!count) return;
+
+        const slots = coverflowTrackEl.querySelectorAll('.coverflow-slot');
+        const isMobile = window.innerWidth < 768;
+        const stepX1 = isMobile ? 220 : 390;
+        const stepX2 = isMobile ? 360 : 690;
+
+        slots.forEach((slot, idx) => {
+            const offset = getCircularOffset(idx, activeIndex, count);
+            const cardEl = slot.querySelector('.project-card-glass');
+
+            if (offset === 0) {
+                // Dead-center active card: 100% flat (rotateY 0deg, translateZ 0px) -> zero distortion, razor-sharp text
+                slot.style.transform = 'translate3d(0px, 0px, 0px) rotateY(0deg) scale(1)';
+                slot.style.opacity = '1';
+                slot.style.filter = 'brightness(1)';
+                slot.style.zIndex = '30';
+                slot.style.pointerEvents = 'auto';
+                slot.style.cursor = 'default';
+                if (cardEl) cardEl.classList.add('project-card-center');
+            } else if (Math.abs(offset) === 1) {
+                const dir = offset > 0 ? 1 : -1;
+                slot.style.transform = `translate3d(${dir * stepX1}px, 0px, -180px) rotateY(${-dir * 26}deg) scale(0.86)`;
+                slot.style.opacity = '0.48';
+                slot.style.filter = 'brightness(0.55)';
+                slot.style.zIndex = '20';
+                slot.style.pointerEvents = 'auto';
+                slot.style.cursor = 'pointer';
+                if (cardEl) cardEl.classList.remove('project-card-center');
+            } else if (Math.abs(offset) === 2) {
+                const dir = offset > 0 ? 1 : -1;
+                slot.style.transform = `translate3d(${dir * stepX2}px, 0px, -360px) rotateY(${-dir * 36}deg) scale(0.74)`;
+                slot.style.opacity = '0.16';
+                slot.style.filter = 'brightness(0.35)';
+                slot.style.zIndex = '10';
+                slot.style.pointerEvents = 'auto';
+                slot.style.cursor = 'pointer';
+                if (cardEl) cardEl.classList.remove('project-card-center');
+            } else {
+                const dir = offset > 0 ? 1 : -1;
+                slot.style.transform = `translate3d(${dir * (stepX2 + 180)}px, 0px, -520px) rotateY(${-dir * 42}deg) scale(0.6)`;
+                slot.style.opacity = '0';
+                slot.style.filter = 'brightness(0.2)';
+                slot.style.zIndex = '1';
+                slot.style.pointerEvents = 'none';
+                if (cardEl) cardEl.classList.remove('project-card-center');
+            }
+        });
+
+        const activeProject = allProjects[activeIndex];
+        if (activeProject && activeNodeReadoutEl) {
+            const numStr = String(activeIndex + 1).padStart(2, '0');
+            const totalStr = String(count).padStart(2, '0');
+            activeNodeReadoutEl.textContent = `FOCUSED_NODE: ${numStr} / ${totalStr} // ${activeProject.title.toUpperCase()}`;
+        }
+
+        // Update active state on bottom quick-selector pills
+        nodeSelectorStripEl.querySelectorAll('.node-quick-pill').forEach((pill, idx) => {
+            if (idx === activeIndex) {
+                pill.classList.add('node-pill-active');
+            } else {
+                pill.classList.remove('node-pill-active');
+            }
+        });
+    }
+
+    function renderStage() {
+        const count = allProjects.length;
+        coverflowTrackEl.innerHTML = allProjects.map((project, idx) => (
+            `<div class="coverflow-slot" data-slot-index="${idx}">
+                ${buildCardInnerHtml(project, idx, count, true)}
+            </div>`
+        )).join('');
+
+        // Clicking a dimmed side card focuses it immediately in the center
+        coverflowTrackEl.querySelectorAll('.coverflow-slot').forEach((slot) => {
+            slot.addEventListener('click', (e) => {
+                const idx = Number(slot.getAttribute('data-slot-index'));
+                if (idx !== activeIndex) {
+                    e.preventDefault();
+                    setActiveNode(idx, true);
+                }
+            });
+        });
+
+        // Render 1-Click Node Selector Strip below stage
+        nodeSelectorStripEl.innerHTML = allProjects.map((project, idx) => {
+            const num = String(idx + 1).padStart(2, '0');
             return `
-                <div class="carousel-item" data-carousel-index="${idx}" style="transform: rotateY(${itemAngle}deg) translateZ(${radius}px);">
-                    ${buildCardInnerHtml(project, idx, count, true)}
-                </div>
+                <button
+                    class="node-quick-pill font-code-sm text-[10px] px-2.5 py-1 border border-primary-container/25 text-on-surface-variant hover:text-primary-container hover:border-primary-container/60 transition-all"
+                    data-node-pill="${idx}"
+                    type="button"
+                >
+                    ${num}_${escapeHtml(project.title.split(' ')[0].toUpperCase())}
+                </button>
             `;
         }).join('');
 
-        hudTotalCounterEl.textContent = `NODES_ONLINE: ${String(count).padStart(2, '0')}`;
-        updateActiveNodeTelemetry();
+        nodeSelectorStripEl.querySelectorAll('.node-quick-pill').forEach((pill) => {
+            pill.addEventListener('click', () => {
+                const idx = Number(pill.getAttribute('data-node-pill'));
+                setActiveNode(idx, true);
+            });
+        });
+
+        hudTotalCounterEl.textContent = `TACTICAL_COMMAND_MATRIX // ${String(count).padStart(2, '0')} NODES ONLINE`;
+        updateCoverflowPositions();
+    }
+
+    function setActiveNode(newIndex, pauseAuto) {
+        const count = allProjects.length;
+        if (!count) return;
+        activeIndex = ((newIndex % count) + count) % count;
+        if (pauseAuto) {
+            autoCycle = false;
+            updateAutoCycleButton();
+        }
+        updateCoverflowPositions();
     }
 
     function renderMatrixGrid() {
@@ -726,170 +852,68 @@
             `<div class="h-full">${buildCardInnerHtml(project, originalIndex, allProjects.length, false)}</div>`
         )).join('');
 
-        // Attach [LOCK_IN_3D] click handlers
-        matrixGridEl.querySelectorAll('.focus-3d-btn').forEach((btn) => {
+        matrixGridEl.querySelectorAll('.focus-stage-btn').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const idx = Number(btn.getAttribute('data-index'));
-                focusCarouselNode(idx, true);
+                setActiveNode(idx, true);
+                document.getElementById('spotlight-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
     }
 
-    function updateActiveNodeTelemetry() {
-        const count = allProjects.length;
-        if (!count) return;
-        const angleStep = 360 / count;
-        const normalizedRot = (((-rotationY % 360) + 360) % 360);
-        const frontIndex = Math.round(normalizedRot / angleStep) % count;
-        const activeProject = allProjects[frontIndex];
-
-        if (activeProject && activeNodeReadoutEl) {
-            const numStr = String(frontIndex + 1).padStart(2, '0');
-            activeNodeReadoutEl.textContent = `ACTIVE_NODE: ${numStr} / ${String(count).padStart(2, '0')} // ${activeProject.title.toUpperCase()}`;
-        }
-
-        // Highlight front-facing card in 3D carousel
-        const items = carouselEl.querySelectorAll('.project-card-glass');
-        items.forEach((card, idx) => {
-            if (idx === frontIndex) {
-                card.classList.add('project-card-active');
-            } else {
-                card.classList.remove('project-card-active');
-            }
-        });
-    }
-
-    function focusCarouselNode(index, scrollIntoView) {
-        const count = allProjects.length;
-        if (!count) return;
-        const angleStep = 360 / count;
-        targetRotationY = -(index * angleStep);
-        autoOrbit = false;
-        updateOrbitToggleButton();
-
-        if (scrollIntoView) {
-            const wrapper = document.getElementById('orbital-section-wrapper');
-            if (wrapper && wrapper.style.display !== 'none') {
-                wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-    }
-
-    function updateOrbitToggleButton() {
+    function updateAutoCycleButton() {
         const btn = document.getElementById('toggle-orbit-btn');
         if (!btn) return;
-        btn.textContent = autoOrbit ? '[ORBIT: ACTIVE]' : '[ORBIT: LOCKED]';
+        btn.textContent = autoCycle ? '[ AUTO_CYCLE: ON ]' : '[ AUTO_CYCLE: PAUSED ]';
     }
 
     // ============================================================================
-    // 4. SMOOTH 60FPS ORBITAL ANIMATION & INTERACTION CONTROLLERS
+    // 4. STAGE CONTROLS, KEYBOARD, SWIPE & AUTO-CYCLE TIMER
     // ============================================================================
-    function animateOrbitalLoop() {
-        if (targetRotationY !== null) {
-            const diff = targetRotationY - rotationY;
-            if (Math.abs(diff) < 0.15) {
-                rotationY = targetRotationY;
-                targetRotationY = null;
-            } else {
-                rotationY += diff * 0.12;
-            }
-            carouselEl.style.transform = `rotateY(${rotationY.toFixed(2)}deg)`;
-            updateActiveNodeTelemetry();
-        } else if (autoOrbit && !isHoverPaused && !isDragging) {
-            rotationY -= 0.085;
-            carouselEl.style.transform = `rotateY(${rotationY.toFixed(2)}deg)`;
-            updateActiveNodeTelemetry();
-        }
-        requestAnimationFrame(animateOrbitalLoop);
-    }
-
-    // Pause on hover over carousel cards
-    carouselEl.addEventListener('mouseenter', () => { isHoverPaused = true; });
-    carouselEl.addEventListener('mouseleave', () => { isHoverPaused = false; });
-
-    // Drag to rotate inside carousel scene only
-    carouselSceneEl.addEventListener('mousedown', (e) => {
-        if (e.target.closest('a, button')) return;
-        isDragging = true;
-        targetRotationY = null;
-        dragStartX = e.clientX;
-    });
-
-    window.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        const deltaX = e.clientX - dragStartX;
-        rotationY += deltaX * 0.22;
-        dragStartX = e.clientX;
-        carouselEl.style.transform = `rotateY(${rotationY.toFixed(2)}deg)`;
-        updateActiveNodeTelemetry();
-    });
-
-    // Touch support inside carousel scene
-    carouselSceneEl.addEventListener('touchstart', (e) => {
-        if (e.target.closest('a, button')) return;
-        isDragging = true;
-        targetRotationY = null;
-        dragStartX = e.touches[0].clientX;
-    }, { passive: true });
-
-    window.addEventListener('touchend', () => {
-        isDragging = false;
-    });
-
-    window.addEventListener('touchmove', (e) => {
-        if (!isDragging) return;
-        const deltaX = e.touches[0].clientX - dragStartX;
-        rotationY += deltaX * 0.22;
-        dragStartX = e.touches[0].clientX;
-        carouselEl.style.transform = `rotateY(${rotationY.toFixed(2)}deg)`;
-        updateActiveNodeTelemetry();
-    }, { passive: true });
-
-    // Tactical HUD Buttons
-    document.getElementById('prev-node-btn').addEventListener('click', () => {
-        const count = allProjects.length;
-        const angleStep = 360 / count;
-        const base = targetRotationY !== null ? targetRotationY : rotationY;
-        targetRotationY = Math.round((base + angleStep) / angleStep) * angleStep;
-        autoOrbit = false;
-        updateOrbitToggleButton();
-    });
-
-    document.getElementById('next-node-btn').addEventListener('click', () => {
-        const count = allProjects.length;
-        const angleStep = 360 / count;
-        const base = targetRotationY !== null ? targetRotationY : rotationY;
-        targetRotationY = Math.round((base - angleStep) / angleStep) * angleStep;
-        autoOrbit = false;
-        updateOrbitToggleButton();
-    });
+    document.getElementById('prev-node-btn').addEventListener('click', () => setActiveNode(activeIndex - 1, true));
+    document.getElementById('next-node-btn').addEventListener('click', () => setActiveNode(activeIndex + 1, true));
+    document.getElementById('stage-prev-btn').addEventListener('click', () => setActiveNode(activeIndex - 1, true));
+    document.getElementById('stage-next-btn').addEventListener('click', () => setActiveNode(activeIndex + 1, true));
 
     document.getElementById('toggle-orbit-btn').addEventListener('click', () => {
-        targetRotationY = null;
-        autoOrbit = !autoOrbit;
-        updateOrbitToggleButton();
+        autoCycle = !autoCycle;
+        updateAutoCycleButton();
     });
 
-    // View Mode Switcher ([3D_ORBIT + MATRIX] vs [MATRIX_ONLY])
-    const modeDualBtn = document.getElementById('mode-dual-btn');
-    const modeGridBtn = document.getElementById('mode-grid-btn');
-    const orbitalWrapper = document.getElementById('orbital-section-wrapper');
+    coverflowSceneEl.addEventListener('mouseenter', () => { isStageHovered = true; });
+    coverflowSceneEl.addEventListener('mouseleave', () => { isStageHovered = false; });
 
-    modeDualBtn.addEventListener('click', () => {
-        orbitalWrapper.style.display = 'block';
-        modeDualBtn.classList.add('filter-btn-active');
-        modeGridBtn.classList.remove('filter-btn-active');
+    // Touch swipe support on mobile/tablet
+    let touchStartX = null;
+    coverflowSceneEl.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    coverflowSceneEl.addEventListener('touchend', (e) => {
+        if (touchStartX === null) return;
+        const deltaX = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(deltaX) > 45) {
+            if (deltaX < 0) setActiveNode(activeIndex + 1, true);
+            else setActiveNode(activeIndex - 1, true);
+        }
+        touchStartX = null;
+    }, { passive: true });
+
+    // Keyboard Left/Right navigation
+    window.addEventListener('keydown', (e) => {
+        if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+        if (e.key === 'ArrowLeft') setActiveNode(activeIndex - 1, true);
+        if (e.key === 'ArrowRight') setActiveNode(activeIndex + 1, true);
     });
 
-    modeGridBtn.addEventListener('click', () => {
-        orbitalWrapper.style.display = 'none';
-        modeGridBtn.classList.add('filter-btn-active');
-        modeDualBtn.classList.remove('filter-btn-active');
-    });
+    window.addEventListener('resize', () => updateCoverflowPositions());
+
+    // Auto-cycle step every 4.2 seconds when active and not hovered
+    setInterval(() => {
+        if (autoCycle && !isStageHovered) {
+            setActiveNode(activeIndex + 1, false);
+        }
+    }, 4200);
 
     // Category Filter & Search Wiring
     document.querySelectorAll('.filter-pill').forEach((pill) => {
@@ -912,7 +936,7 @@
     const GITHUB_USER = 'Ra9mirez11';
     const REQUIRED_TOPIC = 'portfolio';
     const CACHE_KEY = 'bohumel_showcase_gh_portfolio_v1';
-    const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+    const CACHE_TTL_MS = 15 * 60 * 1000;
 
     function applyGitHubPortfolioRepos(repos) {
         if (!Array.isArray(repos)) return;
@@ -931,7 +955,6 @@
             const repoNameLower = String(repo.name || '').toLowerCase();
             const repoUrlLower = String(repo.html_url || '').toLowerCase();
 
-            // Check if this repo is already in allProjects
             const existing = allProjects.find((p) => {
                 const matchByName = p.repoName && p.repoName.toLowerCase() === repoNameLower;
                 const matchByUrl = p.primaryLink && p.primaryLink.url && p.primaryLink.url.toLowerCase() === repoUrlLower;
@@ -949,7 +972,6 @@
                 }
                 addedOrUpdated = true;
             } else {
-                // Brand-new repository tagged with "portfolio" on GitHub -> auto-add card!
                 const customTags = (repo.topics || [])
                     .filter((t) => String(t).toLowerCase() !== REQUIRED_TOPIC)
                     .slice(0, 3)
@@ -988,7 +1010,7 @@
         });
 
         if (addedOrUpdated) {
-            renderCarousel();
+            renderStage();
             renderMatrixGrid();
         }
 
@@ -1009,11 +1031,10 @@
                 }
             }
         } catch (_) {
-            // Ignore localStorage parse errors
+            // Ignore cache read error
         }
 
         try {
-            // 100% Public Read-Only Unauthenticated GET Request — Zero API Keys or Tokens
             const response = await fetch(`https://api.github.com/users/${encodeURIComponent(GITHUB_USER)}/repos?sort=updated&per_page=100`, {
                 method: 'GET',
                 headers: {
@@ -1037,7 +1058,6 @@
                 // Ignore storage quota errors
             }
         } catch (_) {
-            // Fallback to cached data if available
             try {
                 const cachedRaw = localStorage.getItem(CACHE_KEY);
                 if (cachedRaw) {
@@ -1053,12 +1073,11 @@
     }
 
     // Initial boot sequence
-    renderCarousel();
+    renderStage();
     renderMatrixGrid();
-    requestAnimationFrame(animateOrbitalLoop);
     syncGitHubPortfolioNodes();
 
-    console.log("%c SHOWCASE_NODE_v2 %c ZERO_KEY_GITHUB_PORTFOLIO_SYNC_ENGAGED ",
+    console.log("%c SHOWCASE_NODE_v2.1 %c TACTICAL_COVERFLOW_AND_GITHUB_SYNC_ENGAGED ",
         "background: #00f5ff; color: #000; font-weight: bold; padding: 4px 8px;",
         "background: #131313; color: #00f5ff; border: 1px solid #00f5ff; padding: 4px 8px;");
 </script>
