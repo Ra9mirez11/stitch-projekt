@@ -5,12 +5,13 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>SHOWCASE_NODE // BOHUMEL_ARCHITECT</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Anton:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;family=Space+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
     <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
         }
-        
+
         /* Scanline Overlay */
         .scanline-overlay {
             position: fixed;
@@ -62,58 +63,85 @@
 
         /* 3D Carousel Engine */
         .carousel-scene {
-            perspective: 2000px;
+            perspective: 2200px;
             width: 100%;
-            height: 600px;
+            height: 610px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: visible;
+            user-select: none;
+            position: relative;
         }
 
         .carousel-container {
-            width: 320px;
-            height: 480px;
+            width: 330px;
+            height: 510px;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
-            animation: rotate-carousel 60s linear infinite;
-        }
-
-        .carousel-container:hover {
-            animation-play-state: paused;
-        }
-
-        @keyframes rotate-carousel {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(360deg); }
+            will-change: transform;
         }
 
         .carousel-item {
             position: absolute;
-            width: 320px;
-            height: 480px;
+            width: 330px;
+            height: 510px;
             left: 0;
             top: 0;
             backface-visibility: hidden;
             transform-style: preserve-3d;
-            transition: all 0.5s ease;
+            transition: transform 0.65s cubic-bezier(0.23, 1, 0.32, 1), filter 0.4s ease;
         }
 
-        /* Glassmorphism Card Style */
+        /* Brutalist Cyber-Glass Card Style */
         .project-card-glass {
-            background: rgba(31, 31, 31, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 220, 229, 0.2);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 220, 229, 0.05);
+            background: linear-gradient(165deg, rgba(31, 31, 31, 0.88) 0%, rgba(16, 16, 16, 0.94) 100%);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(0, 245, 255, 0.22);
+            box-shadow: 0 14px 36px -10px rgba(0, 0, 0, 0.7), 0 0 22px rgba(0, 245, 255, 0.05);
             overflow: hidden;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
         }
 
         .project-card-glass:hover {
-            border-color: rgba(0, 220, 229, 0.8);
-            box-shadow: 0 0 40px rgba(0, 220, 229, 0.2);
-            transform: scale(1.02) translateZ(30px);
+            border-color: rgba(0, 245, 255, 0.9);
+            box-shadow: 0 0 42px rgba(0, 245, 255, 0.22), inset 0 0 18px rgba(0, 245, 255, 0.06);
+            transform: translateY(-4px);
         }
+
+        .project-card-active {
+            border-color: rgba(0, 245, 255, 0.95);
+            box-shadow: 0 0 48px rgba(0, 245, 255, 0.28), inset 0 0 20px rgba(0, 245, 255, 0.08);
+        }
+
+        /* Corner Target Reticles */
+        .hud-corner-tl,
+        .hud-corner-tr,
+        .hud-corner-bl,
+        .hud-corner-br {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #00f5ff;
+            pointer-events: none;
+            z-index: 25;
+            opacity: 0.55;
+            transition: opacity 0.25s ease, width 0.25s ease, height 0.25s ease;
+        }
+
+        .project-card-glass:hover .hud-corner-tl,
+        .project-card-glass:hover .hud-corner-tr,
+        .project-card-glass:hover .hud-corner-bl,
+        .project-card-glass:hover .hud-corner-br {
+            opacity: 1;
+            width: 12px;
+            height: 12px;
+        }
+
+        .hud-corner-tl { top: 6px; left: 6px; border-top: 2px solid #00f5ff; border-left: 2px solid #00f5ff; }
+        .hud-corner-tr { top: 6px; right: 6px; border-top: 2px solid #00f5ff; border-right: 2px solid #00f5ff; }
+        .hud-corner-bl { bottom: 6px; left: 6px; border-bottom: 2px solid #00f5ff; border-left: 2px solid #00f5ff; }
+        .hud-corner-br { bottom: 6px; right: 6px; border-bottom: 2px solid #00f5ff; border-right: 2px solid #00f5ff; }
 
         /* Glitch & Data Stream Overlay */
         .data-overlay {
@@ -139,385 +167,900 @@
             animation: decrypt 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             opacity: 0;
         }
-        
+
         .stagger-1 { animation-delay: 0.1s; }
         .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
 
         /* Background Visuals */
         .circuit-bg {
             background-image: radial-gradient(circle at 2px 2px, rgba(0, 220, 229, 0.05) 1px, transparent 0);
             background-size: 24px 24px;
         }
+
+        /* Filter Pill Active State */
+        .filter-btn-active {
+            background-color: #00f5ff !important;
+            color: #002021 !important;
+            border-color: #00f5ff !important;
+            box-shadow: 0 0 18px rgba(0, 245, 255, 0.35);
+        }
     </style>
-<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {surface: "#131313", "on-primary-fixed": "#002021", "on-error-container": "#ffdad6", outline: "#849495", "outline-variant": "#3a494a", "on-secondary-container": "#ffe7e4", "primary-fixed": "#63f7ff", "on-surface-variant": "#b9caca", "primary-container": "#00f5ff", "on-tertiary": "#4b007e", "on-background": "#e2e2e2", primary: "#e9feff", background: "#131313", "surface-container": "#1f1f1f", "on-surface": "#e2e2e2", "surface-bright": "#393939", "surface-container-low": "#1b1b1b", "on-tertiary-fixed-variant": "#6b00b0", "on-tertiary-container": "#9000eb", "secondary-container": "#d70016", "on-error": "#690005", "on-primary-fixed-variant": "#004f53", "primary-fixed-dim": "#00dce5", "tertiary-container": "#eed4ff", "inverse-surface": "#e2e2e2", "on-secondary-fixed-variant": "#93000b", secondary: "#ffb4ab", "on-secondary": "#690005", "tertiary-fixed": "#f1daff", "surface-container-high": "#2a2a2a", error: "#ffb4ab", "on-primary": "#003739", "inverse-primary": "#00696e", "surface-variant": "#353535", "surface-tint": "#00dce5", "error-container": "#93000a", "on-tertiary-fixed": "#2d004f", "secondary-fixed": "#ffdad6", "surface-container-highest": "#353535", "on-secondary-fixed": "#410002", "inverse-on-surface": "#303030", "surface-dim": "#131313", tertiary: "#fff8fd", "surface-container-lowest": "#0e0e0e", "tertiary-fixed-dim": "#dfb7ff", "on-primary-container": "#006c71", "secondary-fixed-dim": "#ffb4ab"}, fontFamily: {"label-caps": ["Space Mono"], "headline-xl": ["Anton"], "headline-lg": ["Anton"], "body-md": ["JetBrains Mono"], "code-sm": ["Space Mono"], headline: ["Anton"], display: ["Anton"], body: ["Jetbrains Mono"], label: ["Space Mono"]}, fontSize: {"label-caps": ["10px", {lineHeight: "100%", fontWeight: "700"}], "headline-xl": ["96px", {lineHeight: "90%", letterSpacing: "-0.04em", fontWeight: "400"}], "headline-lg": ["48px", {lineHeight: "100%", letterSpacing: "-0.02em", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "150%", fontWeight: "400"}], "code-sm": ["12px", {lineHeight: "140%", fontWeight: "400"}]}, spacing: {unit: "4px", "container-max": "1440px", gutter: "16px", "margin-mobile": "16px", "margin-desktop": "48px"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}}}};</script>
+    <script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {surface: "#131313", "on-primary-fixed": "#002021", "on-error-container": "#ffdad6", outline: "#849495", "outline-variant": "#3a494a", "on-secondary-container": "#ffe7e4", "primary-fixed": "#63f7ff", "on-surface-variant": "#b9caca", "primary-container": "#00f5ff", "on-tertiary": "#4b007e", "on-background": "#e2e2e2", primary: "#e9feff", background: "#131313", "surface-container": "#1f1f1f", "on-surface": "#e2e2e2", "surface-bright": "#393939", "surface-container-low": "#1b1b1b", "on-tertiary-fixed-variant": "#6b00b0", "on-tertiary-container": "#9000eb", "secondary-container": "#d70016", "on-error": "#690005", "on-primary-fixed-variant": "#004f53", "primary-fixed-dim": "#00dce5", "tertiary-container": "#eed4ff", "inverse-surface": "#e2e2e2", "on-secondary-fixed-variant": "#93000b", secondary: "#ffb4ab", "on-secondary": "#690005", "tertiary-fixed": "#f1daff", "surface-container-high": "#2a2a2a", error: "#ffb4ab", "on-primary": "#003739", "inverse-primary": "#00696e", "surface-variant": "#353535", "surface-tint": "#00dce5", "error-container": "#93000a", "on-tertiary-fixed": "#2d004f", "secondary-fixed": "#ffdad6", "surface-container-highest": "#353535", "on-secondary-fixed": "#410002", "inverse-on-surface": "#303030", "surface-dim": "#131313", tertiary: "#fff8fd", "surface-container-lowest": "#0e0e0e", "tertiary-fixed-dim": "#dfb7ff", "on-primary-container": "#006c71", "secondary-fixed-dim": "#ffb4ab"}, fontFamily: {"label-caps": ["Space Mono"], "headline-xl": ["Anton"], "headline-lg": ["Anton"], "body-md": ["JetBrains Mono"], "code-sm": ["Space Mono"], headline: ["Anton"], display: ["Anton"], body: ["JetBrains Mono"], label: ["Space Mono"]}, fontSize: {"label-caps": ["10px", {lineHeight: "100%", fontWeight: "700"}], "headline-xl": ["96px", {lineHeight: "90%", letterSpacing: "-0.04em", fontWeight: "400"}], "headline-lg": ["48px", {lineHeight: "100%", letterSpacing: "-0.02em", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "150%", fontWeight: "400"}], "code-sm": ["12px", {lineHeight: "140%", fontWeight: "400"}]}, spacing: {unit: "4px", "container-max": "1440px", gutter: "16px", "margin-mobile": "16px", "margin-desktop": "48px"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}}}};</script>
 </head>
 <body class="bg-background text-on-background min-h-screen relative animate-flicker font-body-md circuit-bg">
 <div class="scanline-overlay"></div>
 <div class="void-noise"></div>
+
 <!-- Header / Nav -->
 <nav class="fixed top-0 left-0 w-full z-[110] border-b border-primary-container/10 bg-background/80 backdrop-blur-md">
-<div class="max-w-[1440px] mx-auto px-margin-desktop py-6 flex justify-between items-center">
-<div class="flex flex-col">
-<span class="font-headline-lg text-2xl tracking-tighter text-primary-container">Project_showcase</span>
-<span class="font-code-sm text-[10px] text-primary-container/40 tracking-[0.3em]">SHOWCASE_NODE_v.01</span>
-</div>
-<div class="hidden md:flex items-center gap-8 font-label-caps text-label-caps tracking-widest">
-    <a class="text-on-surface-variant hover:text-primary-container transition-colors" href="index.html">MATRIX (.env)</a>
-    <a class="text-primary-container border-b border-primary-container pb-1" href="showcase.html">SHOWCASE</a>
-    <a class="text-on-surface-variant hover:text-primary-container transition-colors" href="contact.html">CONTACT (Terminal)</a>
-</div>
-<div class="flex items-center gap-4">
-<div class="h-2 w-2 rounded-full bg-primary-container shadow-[0_0_8px_#00f5ff] animate-pulse"></div>
-<span class="font-label-caps text-[10px] text-primary-container/60">LIVE_LINK: ACTIVE</span>
-</div>
-</div>
+    <div class="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-6 flex justify-between items-center">
+        <div class="flex flex-col">
+            <span class="font-headline-lg text-2xl tracking-tighter text-primary-container">Project_showcase</span>
+            <span class="font-code-sm text-[10px] text-primary-container/40 tracking-[0.3em]">SHOWCASE_NODE_v.02 // AUTO_SYNC</span>
+        </div>
+        <div class="hidden md:flex items-center gap-8 font-label-caps text-label-caps tracking-widest">
+            <a class="text-on-surface-variant hover:text-primary-container transition-colors" href="index.html">MATRIX (.env)</a>
+            <a class="text-primary-container border-b border-primary-container pb-1" href="showcase.html">SHOWCASE</a>
+            <a class="text-on-surface-variant hover:text-primary-container transition-colors" href="contact.html">CONTACT (Terminal)</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="h-2 w-2 rounded-full bg-primary-container shadow-[0_0_8px_#00f5ff] animate-pulse" id="sync-indicator-dot"></div>
+            <span class="font-label-caps text-[10px] text-primary-container/70" id="sync-status-label">GITHUB_SYNC: TOPIC["portfolio"]</span>
+        </div>
+    </div>
 </nav>
+
 <!-- Main Content -->
 <main class="relative z-10 pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto">
-<!-- Hero Title Section -->
-<header class="mb-12 text-center">
-<h1 class="font-headline-xl text-headline-xl text-on-background mb-4 staggered-load">
-<span class="stagger-1 inline-block">[SYSTEM_SHOWCASE]</span>
-</h1>
-<div class="flex flex-col items-center gap-6 staggered-load">
-<p class="font-code-sm text-on-surface-variant max-w-2xl stagger-2">
-                    DECRYPTING ARCHIVED ASSETS... INTERACTIVE 3D PROTOCOL ENGAGED. 
-                    HOVER TO HALT ROTATION. ENGAGE NODES FOR DEEP AUDIT.
-                </p>
-</div>
-</header>
-<!-- 3D Carousel Section -->
-<section class="carousel-scene py-12">
-<div class="carousel-container" id="carousel" style="animation-play-state: running;">
-<!-- Project 1: Aegis Protocol -->
-<div class="carousel-item" style="transform: rotateY(0deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="Aegis Protocol Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="aegis-preview.png">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Aegis Protocol</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">ZK_ENCLAVE</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-    15-Chain Zero-Knowledge Security Enclave: DustSweeper, IRS/EU Tax-Loss Harvester, Approval Sentinel &amp; Shamir 2-of-2 Vault.
-</p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://dev.to/ramirez911" target="_blank">
-<span class="material-symbols-outlined text-[14px]">description</span> [TECH_ARTICLE]
-</a>
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://aegis-protocol-web3-eyr2.bolt.host" target="_blank">[LIVE_DEMO]</a>
-</div>
-</div>
-</article>
-</div>
-<!-- Project 2: GuardRail Protocol -->
-<div class="carousel-item" style="transform: rotateY(36deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="GuardRail Protocol Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="guardrail-preview.png">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">GuardRail</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">SOL_FIREWALL</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-    Zero-Trust Pre-Execution Firewall, Honeypot Breaker &amp; Token-2022 Forensic Auditor on Solana.
-</p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/guardrail-protocol" target="_blank">
-<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
-</a>
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://guardrail-protocol.vercel.app" target="_blank">[LIVE_DEMO]</a>
-</div>
-</div>
-</article>
-</div>
-<!-- Project 3: Mantle ATM -->
-<div class="carousel-item" style="transform: rotateY(72deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="Mantle ATM Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqG0emYnJskTVaV8D4ldt6ydAdW5FGPdsrayUhMJZFJRqmLzxAq1uroGtZXYF5dXjDcLwxQDjkWyJVGlNI5i10e8Jp28E_2PVAyYYj1YTVcKY3gmrWos1WpE7ktIg1EC8tiBmn9ShuQlEJgww2v--HTvo9pYGUpJC2uE_98kGd_Nyv8wax4wad8dAKjAaNrE1UGmf0dWbf9x_7hAm-84ffNK9w1zm2hN9XCnvhETaH59SN78vedf5g9Pt-VE0utAu2qAUZWOk84D4">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Mantle ATM</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">L2_DEFI</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-                                Autonomous AI DeFi portfolio manager on Mantle network optimizing yield loops with unique tokenomics.
-                            </p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/ATM-MNT" target="_blank">
-<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
-                                </a>
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://atm-mnt.vercel.app" target="_blank">[LIVE_DEMO]</a>
-</div>
-</div>
-</article>
-</div>
-<!-- Project 4: Bags Auditor -->
-<div class="carousel-item" style="transform: rotateY(108deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="Bags Auditor Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxzi74VhKbQAFs977yGQQFTOFiydgyHYTa_u9D3to9lz2LXGpcJ0CwMsf5r1mFmnRkWHHzxqCoq1r-viokyniEJPfWWZMcwknk9HejIQDQXjIR6UDS4N3EJ48oc0kg8bmnfZqULOudnd9MB7Q_JC2Rtt-zGeVZTwEkujdLIQ-dsT4L6PHIJtoE-hHX2b988LV0XotYjDwfC_iUA9Erk1hdGz8hHCx2ZJhKnl4MpsT6EbS30nDNGzUFCzsVdhrQEo8HvtSfDtgaJIE">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Bags Auditor</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">AI_SECURITY</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-                                Security AI tool for the Bags ecosystem performing real-time audits of creator tokens and fees.
-                            </p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/Bagsauditor" target="_blank">
-<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
-                                </a>
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://bagsauditor.vercel.app" target="_blank">[LIVE_DEMO]</a>
-</div>
-</div>
-</article>
-</div>
-<!-- Project 5: CrisisGuard Pro -->
-<div class="carousel-item" style="transform: rotateY(144deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="CrisisGuard Pro Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhtnxw7OdVjAOibGbyIlKrhs923FAFINagmTp2XKlR6cTZVWiFAFeejNpntqNiSQOjVHGgCYSu_wgRpJpJpLHmKURBS5M3BUs5F9N1JEzu4Mi6YQBFp9xoAmRFFrlkyDH5dQVNue5XqSAL_30beQRkd7V_LYgzVQu8RGCod5pTvPO0abJK39pTYteOae-2s4M1xH9LFOgrgktObEGq4uMtrsy9nFMfJa3rgbYeDILhWScAgisx5Lqbk5hC3_UXuNLxeNCepC24iIA">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">CrisisGuard Pro</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">AI_MOD</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-                                AI-driven dashboard for crisis detection and community moderation (Gemma-4-Good Hackathon).
-                            </p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/CrisisGuard-Pro" target="_blank">
-<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
-                                </a>
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://crisis-guard-pro.vercel.app" target="_blank">[LIVE_DEMO]</a>
-</div>
-</div>
-</article>
-</div>
-<!-- Project 6: Graphic Novel Syndicate -->
-<div class="carousel-item" style="transform: rotateY(180deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="Graphic Novel Syndicate Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBleIsVpPZdm6dRMNC8MgMtiuOVvFIMKoW2xl7U3oHG32NTgKUMaMepghhgjnIUyPsq4A_ZSc4DNYNbgoSR5CKqIs9tbD1VKWRMo0mGaFu59XyVPymeF9avOyFJyA7GYQUzYAwRYWMbcegSu96sIuliXyZwu6mDUyrFgNnkZsJCoSD1pRjWudzXjRXHejk-DDZYOPzaef4z8uIHv5tu-U8HWPJJ_z7aLADRacp0ixfT1FxFeZVqq1_RRIpKMJjq1UlkTeksyDqFYM">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Novel Syndicate</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">AI_GEN</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-                                Automated AI production pipeline for noir comic books using the Melius engine.
-                            </p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://youtu.be/lN5iBnjXkAw" target="_blank">
-<span class="material-symbols-outlined text-[14px]">movie</span> [VIEW_VIDEO]
-                                </a>
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://app.melius.com/projects" target="_blank">[PLATFORM]</a>
-</div>
-</div>
-</article>
-</div>
-<!-- Project 7: Solana Alpha Radar -->
-<div class="carousel-item" style="transform: rotateY(216deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="Solana Alpha Radar Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWLUcIKTf6zK5KZqnwKZSzYTQHObOwZXcGXdzjqrwgDeczSb2DN6thRjZIsNUCs5L1bnrsAJNTxpzEVPKJ52ikqKCgDuimbOUEXbmPyTPwIOB6EOlNduznjChoIShAJ5M-RiBflRLlBm4qMnjm_R4jViG7vPmHGSvU0UNUFg7N8_pDQ4BuV9cnneAR4iKULlFBH9cWkvuf7zD2g8iKM2QzUce81ufoQW0L6nOxwIgp87lWFb_2E1fXbcwJmto9m5uPiKewNCWlxDg">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Alpha Radar</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">SOLANA</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-                                Real-time on-chain tracking and analytics dashboard for discovering early opportunities in the Solana ecosystem.
-                            </p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/solana-alpha-radar" target="_blank">
-<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
-                                </a>
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://solana-alpha-radar-six.vercel.app" target="_blank">[LIVE_DEMO]</a>
-</div>
-</div>
-</article>
-</div>
-<!-- Project 8: Jup Alpha Trigger -->
-<div class="carousel-item" style="transform: rotateY(252deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="Jup Alpha Trigger Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0QEOB9a759O0C5SjOzFRrgKwPKM7wt14OR7bw-s-B_h7HsLnJn70DNXYHmMAt2HyzNUqmq1WJf6wteS3UKEiwhpvbQWEnHMgmqtqYBYN72ysmSvaDOcKC2p7VVFjNqXwvbBXBcavka3P9AyzZUqw5j-JpZHiACMfmUcfBci2ZZHQ090Mj9F9KF33xBPbo3sLMrQbotChoZ2Ozav0o5h7kDonGgv5TWxvsr_BqGEXT7ZkC0VBuI-63kuwWCsDxvVgs3W7Drvdnd30">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Jup Trigger</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">SOL_BOT</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-                                Automated execution engine for Jupiter Exchange on Solana, executing precise trades based on alpha signals.
-                            </p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="https://github.com/Ra9mirez11/jup-alpha-trigger" target="_blank">
-<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
-                                </a>
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://jup-alpha-trigger.vercel.app" target="_blank">[LIVE_DEMO]</a>
-</div>
-</div>
-</article>
-</div>
-<!-- Project 9: Web3 TipJar -->
-<div class="carousel-item" style="transform: rotateY(288deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="Web3 TipJar Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3kWFNpn47np8trLiyfvG9aufni5sA7GrOjrdcwDYFo3A1vWwvn_pNybfjFhBmNo50t8zUlddTDIc30UKMfjT29kmK0xOKopsNFno1zXkuMCwFNVLpISKxG51Bxph73UUsNSMksTA6kk5G4sMJBc_-kEBimAjPA8KqsUTdnZKwSvZM1U9TeKrvEQSJ8mMsejhvbK9UzxEB_rCaExG6t0S26kPy2sDGDnBlMo7CVLXnJUkRxfMgniL1_bSiqubiB8mlWhJR1oFtKvs">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">Web3 TipJar</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">BNB_CHAIN</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-                                Proof-of-Concept protocol for decentralized micro-donations directly on the BNB Chain.
-                            </p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all w-full" href="https://github.com/Ra9mirez11/TipJar.sol" target="_blank">
-<span class="material-symbols-outlined text-[14px]">code</span> [VIEW_SOURCE]
-                                </a>
-<div class="h-[34px] flex items-center justify-center font-label-caps text-[10px] text-on-surface-variant/40 italic">
-                                    [PROTOCOL_NODE_ONLY]
-                                </div>
-</div>
-</div>
-</article>
-</div>
-<!-- Project 10: CzechAI & Custom Tools -->
-<div class="carousel-item" style="transform: rotateY(324deg) translateZ(650px);">
-<article class="project-card-glass rounded-lg flex flex-col h-full group relative">
-<div class="absolute inset-0 data-overlay"></div>
-<div class="h-48 bg-surface-container-high relative overflow-hidden">
-<img alt="CzechAI Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7Yd3s8_YH8LmuZ_HfMKPI6gGIcJ5bjjrETDcy9_zuxK4tr05MpU_t8XnqfYv3I6j1QVY1H7hqvX1R5sBhqFEeX1duzj7W89hHGsIHp_ICi1RLk3VfVDwcI1epeotbhtQoPcoBQX5gskBsavQ5yv57KWz1dwgUuR431eIyKXGyCUc6k1OlPe5jHrj3ncEq3qQCb4ApfyRUHOMC6UQ-br8TdnonL9ZtQw8DQOFgqig3nhm6wLX3rXcp_c11myEZ_wlQOHsOnYMSJ18">
-<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-</div>
-<div class="p-6 relative z-10 flex flex-col flex-grow">
-<div class="flex justify-between items-start mb-4">
-<h3 class="font-headline-lg text-xl text-primary chromatic-glitch">CzechAI Suite</h3>
-<span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/20 px-2 py-0.5">PYTHON_AI</span>
-</div>
-<p class="font-body-md text-xs text-on-surface-variant mb-6 flex-grow leading-relaxed">
-                                Development of 'CzechAI Diamond Suite' Python auto-trainer and the czechai.eu AI platform.
-                            </p>
-<div class="flex flex-col gap-2 pt-6 mt-auto">
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all w-full" href="#">
-<span class="material-symbols-outlined text-[14px]">lock</span> [LOCAL_ACCESS_ONLY]
-                                </a>
-<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="https://czechai.eu" target="_blank">[PLATFORM]</a>
-</div>
-</div>
-</article>
-</div>
-</div>
-</section>
+    <!-- Hero Title Section -->
+    <header class="mb-8 text-center">
+        <h1 class="font-headline-xl text-5xl sm:text-7xl md:text-headline-xl text-on-background mb-4 staggered-load">
+            <span class="stagger-1 inline-block">[SYSTEM_SHOWCASE]</span>
+        </h1>
+        <div class="flex flex-col items-center gap-4 staggered-load">
+            <p class="font-code-sm text-on-surface-variant max-w-2xl stagger-2">
+                DECRYPTING ARCHIVED ASSETS... DUAL-ENGINE 3D ORBITAL &amp; TACTICAL COMMAND MATRIX ENGAGED.
+                PUBLIC READ-ONLY GITHUB TELEMETRY LINKED TO TOPIC <span class="text-primary-container">[portfolio]</span>.
+            </p>
+            <!-- Top Telemetry & View Switcher Bar -->
+            <div class="stagger-3 flex flex-wrap items-center justify-center gap-3 mt-2 bg-surface-container-low/90 border border-primary-container/20 px-4 py-2.5">
+                <div class="flex items-center gap-2 font-label-caps text-[10px] text-primary-container pr-3 border-r border-primary-container/20">
+                    <span class="material-symbols-outlined text-[14px]">radar</span>
+                    <span id="hud-total-counter">NODES_ONLINE: 11</span>
+                </div>
+                <div class="flex items-center gap-2 font-label-caps text-[10px] text-on-surface-variant pr-3 border-r border-primary-container/20">
+                    <span class="material-symbols-outlined text-[14px] text-primary-container">verified_user</span>
+                    <span>API_MODE: ZERO_KEY_READONLY</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="font-label-caps text-[10px] px-2.5 py-1 border border-primary-container/40 text-primary-container hover:bg-primary-container/10 transition-all filter-btn-active" id="mode-dual-btn" type="button">
+                        [3D_ORBIT + MATRIX]
+                    </button>
+                    <button class="font-label-caps text-[10px] px-2.5 py-1 border border-primary-container/30 text-on-surface-variant hover:text-primary-container hover:border-primary-container/60 transition-all" id="mode-grid-btn" type="button">
+                        [MATRIX_ONLY]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 3D Orbital Wrapper -->
+    <div id="orbital-section-wrapper">
+        <!-- Tactical HUD Controls for 3D Carousel -->
+        <div class="flex flex-wrap items-center justify-between gap-4 max-w-4xl mx-auto mb-2 px-4 py-2.5 bg-surface-container-lowest/80 border border-primary-container/20 backdrop-blur-sm">
+            <div class="flex items-center gap-2 font-code-sm text-xs text-primary-container">
+                <span class="material-symbols-outlined text-[16px]">deployed_code</span>
+                <span id="active-node-readout">ACTIVE_NODE: 01 // REPOXRAY (RXRAY)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button class="font-label-caps text-[10px] px-3 py-1.5 border border-primary-container/40 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all flex items-center gap-1" id="prev-node-btn" type="button">
+                    <span class="material-symbols-outlined text-[12px]">chevron_left</span> PREV_NODE
+                </button>
+                <button class="font-label-caps text-[10px] px-3 py-1.5 border border-primary-container/40 bg-primary-container/10 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all" id="toggle-orbit-btn" type="button">
+                    [ORBIT: ACTIVE]
+                </button>
+                <button class="font-label-caps text-[10px] px-3 py-1.5 border border-primary-container/40 text-primary-container hover:bg-primary-container hover:text-on-primary-fixed transition-all flex items-center gap-1" id="next-node-btn" type="button">
+                    NEXT_NODE <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3D Carousel Section -->
+        <section class="carousel-scene py-8" id="carousel-scene">
+            <div class="carousel-container" id="carousel"></div>
+        </section>
+    </div>
+
+    <!-- Tactical Command Matrix Grid Section -->
+    <section class="mt-16 pt-12 border-t border-primary-container/20" id="matrix-section">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+            <div>
+                <div class="flex items-center gap-2 text-primary-container font-label-caps text-[10px] tracking-[0.25em] mb-2">
+                    <span class="material-symbols-outlined text-[14px]">grid_view</span>
+                    <span>TACTICAL_COMMAND_MATRIX // FULL_INDEX</span>
+                </div>
+                <h2 class="font-headline-lg text-3xl md:text-4xl text-on-background tracking-tight">
+                    DEPLOYED_SYSTEMS &amp; GITHUB_PORTFOLIO_NODES
+                </h2>
+            </div>
+
+            <!-- Search Input -->
+            <div class="relative w-full lg:w-80">
+                <span class="material-symbols-outlined text-[16px] text-primary-container/60 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                <input
+                    class="w-full bg-surface-container-lowest border border-primary-container/30 focus:border-primary-container focus:ring-0 font-code-sm text-xs text-on-background pl-9 pr-4 py-2.5 placeholder:text-on-surface-variant/40"
+                    id="matrix-search-input"
+                    placeholder="SEARCH_NODE // NAME, TAG, STACK..."
+                    type="text"
+                >
+            </div>
+        </div>
+
+        <!-- Category Filter Bar -->
+        <div class="flex flex-wrap items-center gap-2 mb-8" id="category-filter-bar">
+            <button class="filter-pill filter-btn-active font-label-caps text-[10px] px-3.5 py-2 border border-primary-container/30 text-on-surface-variant hover:text-primary-container hover:border-primary-container transition-all" data-filter="ALL" type="button">
+                [ALL_NODES]
+            </button>
+            <button class="filter-pill font-label-caps text-[10px] px-3.5 py-2 border border-primary-container/30 text-on-surface-variant hover:text-primary-container hover:border-primary-container transition-all" data-filter="SEC_AUDIT" type="button">
+                [SEC_&amp;_AUDIT]
+            </button>
+            <button class="filter-pill font-label-caps text-[10px] px-3.5 py-2 border border-primary-container/30 text-on-surface-variant hover:text-primary-container hover:border-primary-container transition-all" data-filter="WEB3_SOLANA" type="button">
+                [SOLANA_&amp;_WEB3]
+            </button>
+            <button class="filter-pill font-label-caps text-[10px] px-3.5 py-2 border border-primary-container/30 text-on-surface-variant hover:text-primary-container hover:border-primary-container transition-all" data-filter="AI_SYSTEMS" type="button">
+                [AI_&amp;_NEURAL]
+            </button>
+            <button class="filter-pill font-label-caps text-[10px] px-3.5 py-2 border border-primary-container/30 text-on-surface-variant hover:text-primary-container hover:border-primary-container transition-all" data-filter="GITHUB_SYNC" type="button">
+                [GITHUB_TOPIC: PORTFOLIO]
+            </button>
+        </div>
+
+        <!-- Responsive Project Matrix Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="matrix-grid"></div>
+    </section>
 </main>
+
 <!-- Footer / Status Bar -->
 <footer class="bg-surface-container-lowest border-t border-primary-container/20 w-full py-8 px-margin-desktop px-margin-mobile flex flex-col md:flex-row justify-between items-center gap-6 z-[110] relative">
-<div class="flex flex-col gap-1">
-<div class="font-code-sm text-primary-container flex items-center gap-2">
-<span class="material-symbols-outlined text-[14px]">terminal</span>
-<span class="">[SYSTEM_ROOT]: STATUS_OK // © 2026 ŠTEFAN BOHUMEL</span>
-</div>
-<span class="font-label-caps text-[10px] text-outline opacity-40">LAST_ENCRYPTION: 14:32:01_UTC</span>
-</div>
-<div class="flex flex-wrap justify-center gap-6 font-code-sm text-code-sm">
-<a class="text-on-surface-variant hover:text-primary-container hover:bg-primary-container/5 px-2 py-1 transition-all duration-300 group" href="contact.html">
-<span class="group-hover:mr-1">&gt;&gt;</span> ENCRYPTED_COMMS
-            </a>
-<a class="text-on-surface-variant hover:text-primary-container hover:bg-primary-container/5 px-2 py-1 transition-all duration-300 group" href="#">
-<span class="group-hover:mr-1">&gt;&gt;</span> PUBLIC_KEY
-            </a>
-<div class="text-primary-container/30 px-2 py-1 cursor-default border-l border-outline-variant/30 ml-2">
-                VER_0.9.8_BETA
-            </div>
-</div>
+    <div class="flex flex-col gap-1">
+        <div class="font-code-sm text-primary-container flex items-center gap-2">
+            <span class="material-symbols-outlined text-[14px]">terminal</span>
+            <span>[SYSTEM_ROOT]: STATUS_OK // © 2026 ŠTEFAN BOHUMEL</span>
+        </div>
+        <span class="font-label-caps text-[10px] text-outline opacity-40" id="footer-sync-timestamp">LAST_ENCRYPTION: LIVE_TELEMETRY_ACTIVE</span>
+    </div>
+    <div class="flex flex-wrap justify-center gap-6 font-code-sm text-code-sm">
+        <a class="text-on-surface-variant hover:text-primary-container hover:bg-primary-container/5 px-2 py-1 transition-all duration-300 group" href="contact.html">
+            <span class="group-hover:mr-1">&gt;&gt;</span> ENCRYPTED_COMMS
+        </a>
+        <a class="text-on-surface-variant hover:text-primary-container hover:bg-primary-container/5 px-2 py-1 transition-all duration-300 group" href="https://github.com/Ra9mirez11" rel="noopener noreferrer" target="_blank">
+            <span class="group-hover:mr-1">&gt;&gt;</span> GITHUB_ARCHIVE
+        </a>
+        <div class="text-primary-container/30 px-2 py-1 cursor-default border-l border-outline-variant/30 ml-2">
+            VER_2.0_AUTOSYNC
+        </div>
+    </div>
 </footer>
+
 <script>
-        const carousel = document.getElementById('carousel');
-        let isDragging = false;
-        let startX;
-        let rotationY = 0;
-        let autoRotateEnabled = true;
+    // ============================================================================
+    // 1. CURATED CORE PROJECT REGISTRY (INSTANT 0ms RENDER + FALLBACK)
+    // ============================================================================
+    const CURATED_PROJECTS = [
+        {
+            id: 'repoxray',
+            repoName: 'repoxray',
+            title: 'RepoXray (rxray)',
+            badge: 'APPSEC_CLI',
+            category: ['SEC_AUDIT', 'AI_SYSTEMS', 'GITHUB_SYNC'],
+            status: 'NPM_LIVE // v0.3.3',
+            image: 'https://repoxray.pages.dev/og-card.svg?v=2',
+            description: 'Zero-dependency CLI, GitHub Action & Web scanner auditing AI Agent configs (MCP, Cursor, Claude Code, Windsurf), Supply Chain risks, and leaked secrets in <2s.',
+            tags: ['TYPESCRIPT', 'AST_ENGINE', 'MCP_SECURITY', '0_DEPS'],
+            primaryLink: { label: '[VIEW_SOURCE]', url: 'https://github.com/Ra9mirez11/repoxray', icon: 'code' },
+            secondaryLink: { label: '[LIVE_SCANNER]', url: 'https://repoxray.pages.dev' },
+            githubSynced: true,
+            stars: 0
+        },
+        {
+            id: 'aegis-protocol',
+            repoName: 'aegis-protocol',
+            title: 'Aegis Protocol',
+            badge: 'ZK_ENCLAVE',
+            category: ['SEC_AUDIT', 'WEB3_SOLANA'],
+            status: '15_CHAIN_ENCLAVE',
+            image: 'aegis-preview.png',
+            description: '15-Chain Zero-Knowledge Security Enclave: DustSweeper, IRS/EU Tax-Loss Harvester, Approval Sentinel & Shamir 2-of-2 Vault.',
+            tags: ['ZK_PROOFS', 'SHAMIR_VAULT', 'MULTI_CHAIN', 'SECURITY'],
+            primaryLink: { label: '[TECH_ARTICLE]', url: 'https://dev.to/ramirez911', icon: 'description' },
+            secondaryLink: { label: '[LIVE_DEMO]', url: 'https://aegis-protocol-web3-eyr2.bolt.host' },
+            githubSynced: false,
+            stars: 0
+        },
+        {
+            id: 'guardrail-protocol',
+            repoName: 'guardrail-protocol',
+            title: 'GuardRail',
+            badge: 'SOL_FIREWALL',
+            category: ['SEC_AUDIT', 'WEB3_SOLANA'],
+            status: 'PRE_EXEC_FIREWALL',
+            image: 'guardrail-preview.png',
+            description: 'Zero-Trust Pre-Execution Firewall, Honeypot Breaker & Token-2022 Forensic Auditor on Solana.',
+            tags: ['SOLANA', 'RUST', 'TOKEN_2022', 'FIREWALL'],
+            primaryLink: { label: '[VIEW_SOURCE]', url: 'https://github.com/Ra9mirez11/guardrail-protocol', icon: 'code' },
+            secondaryLink: { label: '[LIVE_DEMO]', url: 'https://guardrail-protocol.vercel.app' },
+            githubSynced: false,
+            stars: 0
+        },
+        {
+            id: 'atm-mnt',
+            repoName: 'ATM-MNT',
+            title: 'Mantle ATM',
+            badge: 'L2_DEFI',
+            category: ['WEB3_SOLANA', 'AI_SYSTEMS'],
+            status: 'MANTLE_L2_NODE',
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAqG0emYnJskTVaV8D4ldt6ydAdW5FGPdsrayUhMJZFJRqmLzxAq1uroGtZXYF5dXjDcLwxQDjkWyJVGlNI5i10e8Jp28E_2PVAyYYj1YTVcKY3gmrWos1WpE7ktIg1EC8tiBmn9ShuQlEJgww2v--HTvo9pYGUpJC2uE_98kGd_Nyv8wax4wad8dAKjAaNrE1UGmf0dWbf9x_7hAm-84ffNK9w1zm2hN9XCnvhETaH59SN78vedf5g9Pt-VE0utAu2qAUZWOk84D4',
+            description: 'Autonomous AI DeFi portfolio manager on Mantle network optimizing yield loops with unique tokenomics.',
+            tags: ['MANTLE_L2', 'SOLIDITY', 'AI_YIELD', 'DEFI'],
+            primaryLink: { label: '[VIEW_SOURCE]', url: 'https://github.com/Ra9mirez11/ATM-MNT', icon: 'code' },
+            secondaryLink: { label: '[LIVE_DEMO]', url: 'https://atm-mnt.vercel.app' },
+            githubSynced: false,
+            stars: 0
+        },
+        {
+            id: 'bagsauditor',
+            repoName: 'Bagsauditor',
+            title: 'Bags Auditor',
+            badge: 'AI_SECURITY',
+            category: ['SEC_AUDIT', 'AI_SYSTEMS', 'WEB3_SOLANA'],
+            status: 'FORENSIC_AUDITOR',
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBxzi74VhKbQAFs977yGQQFTOFiydgyHYTa_u9D3to9lz2LXGpcJ0CwMsf5r1mFmnRkWHHzxqCoq1r-viokyniEJPfWWZMcwknk9HejIQDQXjIR6UDS4N3EJ48oc0kg8bmnfZqULOudnd9MB7Q_JC2Rtt-zGeVZTwEkujdLIQ-dsT4L6PHIJtoE-hHX2b988LV0XotYjDwfC_iUA9Erk1hdGz8hHCx2ZJhKnl4MpsT6EbS30nDNGzUFCzsVdhrQEo8HvtSfDtgaJIE',
+            description: 'Security AI tool for the Bags ecosystem performing real-time audits of creator tokens and fees.',
+            tags: ['AI_AUDIT', 'TOKEN_SECURITY', 'FEE_SCANNER'],
+            primaryLink: { label: '[VIEW_SOURCE]', url: 'https://github.com/Ra9mirez11/Bagsauditor', icon: 'code' },
+            secondaryLink: { label: '[LIVE_DEMO]', url: 'https://bagsauditor.vercel.app' },
+            githubSynced: false,
+            stars: 0
+        },
+        {
+            id: 'crisisguard-pro',
+            repoName: 'CrisisGuard-Pro',
+            title: 'CrisisGuard Pro',
+            badge: 'AI_MOD',
+            category: ['AI_SYSTEMS', 'SEC_AUDIT'],
+            status: 'GEMMA_HACKATHON',
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBhtnxw7OdVjAOibGbyIlKrhs923FAFINagmTp2XKlR6cTZVWiFAFeejNpntqNiSQOjVHGgCYSu_wgRpJpJpLHmKURBS5M3BUs5F9N1JEzu4Mi6YQBFp9xoAmRFFrlkyDH5dQVNue5XqSAL_30beQRkd7V_LYgzVQu8RGCod5pTvPO0abJK39pTYteOae-2s4M1xH9LFOgrgktObEGq4uMtrsy9nFMfJa3rgbYeDILhWScAgisx5Lqbk5hC3_UXuNLxeNCepC24iIA',
+            description: 'AI-driven dashboard for crisis detection and community moderation (Gemma-4-Good Hackathon).',
+            tags: ['GEMMA_AI', 'NLP_TRIAGE', 'REALTIME_MOD'],
+            primaryLink: { label: '[VIEW_SOURCE]', url: 'https://github.com/Ra9mirez11/CrisisGuard-Pro', icon: 'code' },
+            secondaryLink: { label: '[LIVE_DEMO]', url: 'https://crisis-guard-pro.vercel.app' },
+            githubSynced: false,
+            stars: 0
+        },
+        {
+            id: 'novel-syndicate',
+            repoName: null,
+            title: 'Novel Syndicate',
+            badge: 'AI_GEN',
+            category: ['AI_SYSTEMS'],
+            status: 'MELIUS_PIPELINE',
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBleIsVpPZdm6dRMNC8MgMtiuOVvFIMKoW2xl7U3oHG32NTgKUMaMepghhgjnIUyPsq4A_ZSc4DNYNbgoSR5CKqIs9tbD1VKWRMo0mGaFu59XyVPymeF9avOyFJyA7GYQUzYAwRYWMbcegSu96sIuliXyZwu6mDUyrFgNnkZsJCoSD1pRjWudzXjRXHejk-DDZYOPzaef4z8uIHv5tu-U8HWPJJ_z7aLADRacp0ixfT1FxFeZVqq1_RRIpKMJjq1UlkTeksyDqFYM',
+            description: 'Automated AI production pipeline for noir comic books using the Melius engine.',
+            tags: ['GENERATIVE_AI', 'NOIR_ENGINE', 'MULTIMODAL'],
+            primaryLink: { label: '[VIEW_VIDEO]', url: 'https://youtu.be/lN5iBnjXkAw', icon: 'movie' },
+            secondaryLink: { label: '[PLATFORM]', url: 'https://app.melius.com/projects' },
+            githubSynced: false,
+            stars: 0
+        },
+        {
+            id: 'solana-alpha-radar',
+            repoName: 'solana-alpha-radar',
+            title: 'Alpha Radar',
+            badge: 'SOLANA',
+            category: ['WEB3_SOLANA'],
+            status: 'ONCHAIN_TELEMETRY',
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWLUcIKTf6zK5KZqnwKZSzYTQHObOwZXcGXdzjqrwgDeczSb2DN6thRjZIsNUCs5L1bnrsAJNTxpzEVPKJ52ikqKCgDuimbOUEXbmPyTPwIOB6EOlNduznjChoIShAJ5M-RiBflRLlBm4qMnjm_R4jViG7vPmHGSvU0UNUFg7N8_pDQ4BuV9cnneAR4iKULlFBH9cWkvuf7zD2g8iKM2QzUce81ufoQW0L6nOxwIgp87lWFb_2E1fXbcwJmto9m5uPiKewNCWlxDg',
+            description: 'Real-time on-chain tracking and analytics dashboard for discovering early opportunities in the Solana ecosystem.',
+            tags: ['SOLANA_RPC', 'DEX_ANALYTICS', 'ONCHAIN_RADAR'],
+            primaryLink: { label: '[VIEW_SOURCE]', url: 'https://github.com/Ra9mirez11/solana-alpha-radar', icon: 'code' },
+            secondaryLink: { label: '[LIVE_DEMO]', url: 'https://solana-alpha-radar-six.vercel.app' },
+            githubSynced: false,
+            stars: 0
+        },
+        {
+            id: 'jup-alpha-trigger',
+            repoName: 'jup-alpha-trigger',
+            title: 'Jup Trigger',
+            badge: 'SOL_BOT',
+            category: ['WEB3_SOLANA'],
+            status: 'EXECUTION_ENGINE',
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB0QEOB9a759O0C5SjOzFRrgKwPKM7wt14OR7bw-s-B_h7HsLnJn70DNXYHmMAt2HyzNUqmq1WJf6wteS3UKEiwhpvbQWEnHMgmqtqYBYN72ysmSvaDOcKC2p7VVFjNqXwvbBXBcavka3P9AyzZUqw5j-JpZHiACMfmUcfBci2ZZHQ090Mj9F9KF33xBPbo3sLMrQbotChoZ2Ozav0o5h7kDonGgv5TWxvsr_BqGEXT7ZkC0VBuI-63kuwWCsDxvVgs3W7Drvdnd30',
+            description: 'Automated execution engine for Jupiter Exchange on Solana, executing precise trades based on alpha signals.',
+            tags: ['JUPITER_V6', 'SOLANA_BOT', 'LOW_LATENCY'],
+            primaryLink: { label: '[VIEW_SOURCE]', url: 'https://github.com/Ra9mirez11/jup-alpha-trigger', icon: 'code' },
+            secondaryLink: { label: '[LIVE_DEMO]', url: 'https://jup-alpha-trigger.vercel.app' },
+            githubSynced: false,
+            stars: 0
+        },
+        {
+            id: 'tipjar-sol',
+            repoName: 'TipJar.sol',
+            title: 'Web3 TipJar',
+            badge: 'BNB_CHAIN',
+            category: ['WEB3_SOLANA'],
+            status: 'SMART_CONTRACT',
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB3kWFNpn47np8trLiyfvG9aufni5sA7GrOjrdcwDYFo3A1vWwvn_pNybfjFhBmNo50t8zUlddTDIc30UKMfjT29kmK0xOKopsNFno1zXkuMCwFNVLpISKxG51Bxph73UUsNSMksTA6kk5G4sMJBc_-kEBimAjPA8KqsUTdnZKwSvZM1U9TeKrvEQSJ8mMsejhvbK9UzxEB_rCaExG6t0S26kPy2sDGDnBlMo7CVLXnJUkRxfMgniL1_bSiqubiB8mlWhJR1oFtKvs',
+            description: 'Proof-of-Concept protocol for decentralized micro-donations directly on the BNB Chain.',
+            tags: ['SOLIDITY', 'BNB_CHAIN', 'MICRO_PAYMENTS'],
+            primaryLink: { label: '[VIEW_SOURCE]', url: 'https://github.com/Ra9mirez11/TipJar.sol', icon: 'code' },
+            secondaryLink: { label: '[PROTOCOL_NODE_ONLY]', url: null },
+            githubSynced: false,
+            stars: 0
+        },
+        {
+            id: 'czechai-suite',
+            repoName: null,
+            title: 'CzechAI Suite',
+            badge: 'PYTHON_AI',
+            category: ['AI_SYSTEMS'],
+            status: 'PROPRIETARY_CORE',
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD7Yd3s8_YH8LmuZ_HfMKPI6gGIcJ5bjjrETDcy9_zuxK4tr05MpU_t8XnqfYv3I6j1QVY1H7hqvX1R5sBhqFEeX1duzj7W89hHGsIHp_ICi1RLk3VfVDwcI1epeotbhtQoPcoBQX5gskBsavQ5yv57KWz1dwgUuR431eIyKXGyCUc6k1OlPe5jHrj3ncEq3qQCb4ApfyRUHOMC6UQ-br8TdnonL9ZtQw8DQOFgqig3nhm6wLX3rXcp_c11myEZ_wlQOHsOnYMSJ18',
+            description: "Development of 'CzechAI Diamond Suite' Python auto-trainer and the czechai.eu AI platform.",
+            tags: ['PYTHON', 'AUTO_TRAINER', 'LLM_OPS'],
+            primaryLink: { label: '[LOCAL_ACCESS_ONLY]', url: '#', icon: 'lock' },
+            secondaryLink: { label: '[PLATFORM]', url: 'https://czechai.eu' },
+            githubSynced: false,
+            stars: 0
+        }
+    ];
 
-        // Interaction handlers
-        window.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.clientX;
-            carousel.style.animationPlayState = 'paused';
+    // Repositories to exclude from becoming standalone cards if tagged
+    const IGNORED_REPOS = new Set(['stitch-projekt', 'ra9mirez11']);
+
+    // ============================================================================
+    // 2. SECURITY & SANITIZATION HELPERS (STRICT XSS & URL PROTECTION)
+    // ============================================================================
+    function escapeHtml(raw) {
+        if (raw === null || raw === undefined) return '';
+        return String(raw)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function sanitizeUrl(url) {
+        if (!url || typeof url !== 'string') return null;
+        const trimmed = url.trim();
+        if (trimmed === '#') return '#';
+        if (/^(https?:\/\/)/i.test(trimmed)) return trimmed;
+        if (/^[a-zA-Z0-9._-]+\.(png|jpg|jpeg|svg|webp)$/i.test(trimmed)) return trimmed;
+        return null;
+    }
+
+    function formatRepoTitle(name) {
+        return String(name || 'UNNAMED_NODE')
+            .replace(/[-_]+/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    function inferCategoriesFromRepo(repo) {
+        const cats = ['GITHUB_SYNC'];
+        const blob = `${repo.name || ''} ${repo.description || ''} ${(repo.topics || []).join(' ')} ${repo.language || ''}`.toLowerCase();
+        if (/(sec|audit|xray|scanner|firewall|guard|zk|crypto|cve|vuln)/.test(blob)) {
+            cats.push('SEC_AUDIT');
+        }
+        if (/(solana|web3|defi|token|chain|solidity|anchor|rust|mnt|bnb|dex|jup)/.test(blob)) {
+            cats.push('WEB3_SOLANA');
+        }
+        if (/(ai|llm|agent|mcp|neural|gemma|ml|model|python|gpt)/.test(blob)) {
+            cats.push('AI_SYSTEMS');
+        }
+        return Array.from(new Set(cats));
+    }
+
+    // ============================================================================
+    // 3. STATE & RENDERING ENGINE (3D CAROUSEL + TACTICAL MATRIX GRID)
+    // ============================================================================
+    let allProjects = CURATED_PROJECTS.map((p) => ({ ...p, category: [...p.category], tags: [...p.tags] }));
+    let activeFilter = 'ALL';
+    let searchQuery = '';
+
+    // 3D Carousel State
+    const carouselEl = document.getElementById('carousel');
+    const carouselSceneEl = document.getElementById('carousel-scene');
+    const activeNodeReadoutEl = document.getElementById('active-node-readout');
+    const hudTotalCounterEl = document.getElementById('hud-total-counter');
+    let rotationY = 0;
+    let targetRotationY = null;
+    let autoOrbit = true;
+    let isHoverPaused = false;
+    let isDragging = false;
+    let dragStartX = 0;
+
+    function computeCarouselRadius(count) {
+        // Scales radius dynamically with card count so 11, 15, or 20 cards never overlap
+        return Math.max(700, Math.round((count * 355) / (2 * Math.PI)));
+    }
+
+    function buildCardInnerHtml(project, index, total, isCarouselCard) {
+        const nodeIndex = String(index + 1).padStart(2, '0');
+        const safeTitle = escapeHtml(project.title);
+        const safeBadge = escapeHtml(project.badge);
+        const safeStatus = escapeHtml(project.status || 'DEPLOYED_NODE');
+        const safeDesc = escapeHtml(project.description);
+        const safeImg = sanitizeUrl(project.image) || 'aegis-preview.png';
+        const primaryUrl = sanitizeUrl(project.primaryLink && project.primaryLink.url);
+        const primaryLabel = escapeHtml((project.primaryLink && project.primaryLink.label) || '[VIEW_SOURCE]');
+        const primaryIcon = escapeHtml((project.primaryLink && project.primaryLink.icon) || 'code');
+        const secondaryUrl = sanitizeUrl(project.secondaryLink && project.secondaryLink.url);
+        const secondaryLabel = escapeHtml((project.secondaryLink && project.secondaryLink.label) || '[LIVE_DEMO]');
+
+        const tagsHtml = (project.tags || []).slice(0, 4).map((t) => (
+            `<span class="font-code-sm text-[9px] text-primary-container/80 bg-primary-container/5 border border-primary-container/20 px-1.5 py-0.5">${escapeHtml(t)}</span>`
+        )).join('');
+
+        const syncBadgeHtml = project.githubSynced
+            ? `<span class="font-label-caps text-[8px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-1.5 py-0.5 flex items-center gap-1">
+                   <span class="h-1.5 w-1.5 rounded-full bg-primary-container animate-pulse"></span>GH_PORTFOLIO${project.stars > 0 ? ` ★${Number(project.stars)}` : ''}
+               </span>`
+            : `<span class="font-label-caps text-[8px] text-on-surface-variant/70 border border-outline-variant/40 px-1.5 py-0.5">${safeStatus}</span>`;
+
+        const secondaryActionHtml = secondaryUrl
+            ? `<a class="flex items-center justify-center gap-2 font-label-caps text-[10px] bg-primary-container text-on-primary-fixed px-2 py-2 hover:brightness-110 transition-all" href="${secondaryUrl}" rel="noopener noreferrer" target="_blank">
+                   <span>${secondaryLabel}</span>
+                   <span class="material-symbols-outlined text-[13px]">north_east</span>
+               </a>`
+            : `<div class="h-[34px] flex items-center justify-center font-label-caps text-[10px] text-on-surface-variant/40 border border-outline-variant/20 italic">
+                   ${secondaryLabel}
+               </div>`;
+
+        const focusOrbitalBtnHtml = !isCarouselCard
+            ? `<button class="focus-3d-btn font-label-caps text-[9px] text-primary-container/70 hover:text-primary-container flex items-center gap-1 transition-colors" data-index="${index}" type="button">
+                   <span class="material-symbols-outlined text-[13px]">3d_rotation</span> [LOCK_IN_3D]
+               </button>`
+            : `<span class="font-label-caps text-[9px] text-primary-container/50">ORBIT_${nodeIndex}/${String(total).padStart(2, '0')}</span>`;
+
+        return `
+            <article class="project-card-glass rounded-lg flex flex-col h-full group relative" data-node-index="${index}">
+                <div class="hud-corner-tl"></div>
+                <div class="hud-corner-tr"></div>
+                <div class="hud-corner-bl"></div>
+                <div class="hud-corner-br"></div>
+                <div class="absolute inset-0 data-overlay"></div>
+
+                <!-- Image Header with HUD Telemetry Bar -->
+                <div class="h-44 bg-surface-container-high relative overflow-hidden shrink-0">
+                    <div class="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-3 py-1.5 bg-background/80 backdrop-blur-sm border-b border-primary-container/20">
+                        <span class="font-code-sm text-[9px] text-primary-container tracking-widest">NODE_${nodeIndex}</span>
+                        ${syncBadgeHtml}
+                    </div>
+                    <img alt="${safeTitle} Preview" class="w-full h-full object-cover opacity-65 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" loading="lazy" src="${safeImg}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent"></div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="p-5 relative z-10 flex flex-col flex-grow">
+                    <div class="flex justify-between items-start gap-2 mb-2.5">
+                        <h3 class="font-headline-lg text-xl text-primary chromatic-glitch leading-tight">${safeTitle}</h3>
+                        <span class="font-label-caps text-[9px] bg-primary-container/10 text-primary-container border border-primary-container/30 px-2 py-0.5 shrink-0">${safeBadge}</span>
+                    </div>
+
+                    <p class="font-body-md text-xs text-on-surface-variant mb-4 flex-grow leading-relaxed line-clamp-3">
+                        ${safeDesc}
+                    </p>
+
+                    <!-- Tech Stack Micro-Tags -->
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        ${tagsHtml}
+                    </div>
+
+                    <!-- Card Actions -->
+                    <div class="flex flex-col gap-2 pt-3 border-t border-primary-container/15 mt-auto">
+                        <div class="flex items-center justify-between mb-0.5">
+                            ${focusOrbitalBtnHtml}
+                            <span class="font-code-sm text-[9px] text-outline/60">${safeStatus}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <a class="flex items-center justify-center gap-1.5 font-label-caps text-[10px] text-primary-container border border-primary-container/30 px-2 py-2 hover:bg-primary-container/10 transition-all" href="${primaryUrl || '#'}" ${primaryUrl && primaryUrl !== '#' ? 'rel="noopener noreferrer" target="_blank"' : ''}>
+                                <span class="material-symbols-outlined text-[13px]">${primaryIcon}</span>
+                                <span>${primaryLabel}</span>
+                            </a>
+                            ${secondaryActionHtml}
+                        </div>
+                    </div>
+                </div>
+            </article>
+        `;
+    }
+
+    function renderCarousel() {
+        const count = allProjects.length;
+        const radius = computeCarouselRadius(count);
+        const angleStep = 360 / count;
+
+        carouselEl.innerHTML = allProjects.map((project, idx) => {
+            const itemAngle = (idx * angleStep).toFixed(2);
+            return `
+                <div class="carousel-item" data-carousel-index="${idx}" style="transform: rotateY(${itemAngle}deg) translateZ(${radius}px);">
+                    ${buildCardInnerHtml(project, idx, count, true)}
+                </div>
+            `;
+        }).join('');
+
+        hudTotalCounterEl.textContent = `NODES_ONLINE: ${String(count).padStart(2, '0')}`;
+        updateActiveNodeTelemetry();
+    }
+
+    function renderMatrixGrid() {
+        const matrixGridEl = document.getElementById('matrix-grid');
+        const normalizedQuery = searchQuery.trim().toLowerCase();
+
+        const filtered = allProjects
+            .map((project, originalIndex) => ({ project, originalIndex }))
+            .filter(({ project }) => {
+                const matchesCategory = activeFilter === 'ALL'
+                    || (activeFilter === 'GITHUB_SYNC' && project.githubSynced)
+                    || (project.category && project.category.includes(activeFilter));
+
+                if (!matchesCategory) return false;
+                if (!normalizedQuery) return true;
+
+                const haystack = `${project.title} ${project.badge} ${project.description} ${(project.tags || []).join(' ')} ${project.status || ''}`.toLowerCase();
+                return haystack.includes(normalizedQuery);
+            });
+
+        if (filtered.length === 0) {
+            matrixGridEl.innerHTML = `
+                <div class="col-span-full border border-primary-container/20 bg-surface-container-low/60 p-10 text-center">
+                    <p class="font-label-caps text-xs text-primary-container mb-2">[ZERO_NODES_MATCHED]</p>
+                    <p class="font-code-sm text-xs text-on-surface-variant">NO ARCHIVED PROJECTS MATCH CURRENT FILTER PARAMETERS.</p>
+                </div>
+            `;
+            return;
+        }
+
+        matrixGridEl.innerHTML = filtered.map(({ project, originalIndex }) => (
+            `<div class="h-full">${buildCardInnerHtml(project, originalIndex, allProjects.length, false)}</div>`
+        )).join('');
+
+        // Attach [LOCK_IN_3D] click handlers
+        matrixGridEl.querySelectorAll('.focus-3d-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const idx = Number(btn.getAttribute('data-index'));
+                focusCarouselNode(idx, true);
+            });
+        });
+    }
+
+    function updateActiveNodeTelemetry() {
+        const count = allProjects.length;
+        if (!count) return;
+        const angleStep = 360 / count;
+        const normalizedRot = (((-rotationY % 360) + 360) % 360);
+        const frontIndex = Math.round(normalizedRot / angleStep) % count;
+        const activeProject = allProjects[frontIndex];
+
+        if (activeProject && activeNodeReadoutEl) {
+            const numStr = String(frontIndex + 1).padStart(2, '0');
+            activeNodeReadoutEl.textContent = `ACTIVE_NODE: ${numStr} / ${String(count).padStart(2, '0')} // ${activeProject.title.toUpperCase()}`;
+        }
+
+        // Highlight front-facing card in 3D carousel
+        const items = carouselEl.querySelectorAll('.project-card-glass');
+        items.forEach((card, idx) => {
+            if (idx === frontIndex) {
+                card.classList.add('project-card-active');
+            } else {
+                card.classList.remove('project-card-active');
+            }
+        });
+    }
+
+    function focusCarouselNode(index, scrollIntoView) {
+        const count = allProjects.length;
+        if (!count) return;
+        const angleStep = 360 / count;
+        targetRotationY = -(index * angleStep);
+        autoOrbit = false;
+        updateOrbitToggleButton();
+
+        if (scrollIntoView) {
+            const wrapper = document.getElementById('orbital-section-wrapper');
+            if (wrapper && wrapper.style.display !== 'none') {
+                wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }
+
+    function updateOrbitToggleButton() {
+        const btn = document.getElementById('toggle-orbit-btn');
+        if (!btn) return;
+        btn.textContent = autoOrbit ? '[ORBIT: ACTIVE]' : '[ORBIT: LOCKED]';
+    }
+
+    // ============================================================================
+    // 4. SMOOTH 60FPS ORBITAL ANIMATION & INTERACTION CONTROLLERS
+    // ============================================================================
+    function animateOrbitalLoop() {
+        if (targetRotationY !== null) {
+            const diff = targetRotationY - rotationY;
+            if (Math.abs(diff) < 0.15) {
+                rotationY = targetRotationY;
+                targetRotationY = null;
+            } else {
+                rotationY += diff * 0.12;
+            }
+            carouselEl.style.transform = `rotateY(${rotationY.toFixed(2)}deg)`;
+            updateActiveNodeTelemetry();
+        } else if (autoOrbit && !isHoverPaused && !isDragging) {
+            rotationY -= 0.085;
+            carouselEl.style.transform = `rotateY(${rotationY.toFixed(2)}deg)`;
+            updateActiveNodeTelemetry();
+        }
+        requestAnimationFrame(animateOrbitalLoop);
+    }
+
+    // Pause on hover over carousel cards
+    carouselEl.addEventListener('mouseenter', () => { isHoverPaused = true; });
+    carouselEl.addEventListener('mouseleave', () => { isHoverPaused = false; });
+
+    // Drag to rotate inside carousel scene only
+    carouselSceneEl.addEventListener('mousedown', (e) => {
+        if (e.target.closest('a, button')) return;
+        isDragging = true;
+        targetRotationY = null;
+        dragStartX = e.clientX;
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const deltaX = e.clientX - dragStartX;
+        rotationY += deltaX * 0.22;
+        dragStartX = e.clientX;
+        carouselEl.style.transform = `rotateY(${rotationY.toFixed(2)}deg)`;
+        updateActiveNodeTelemetry();
+    });
+
+    // Touch support inside carousel scene
+    carouselSceneEl.addEventListener('touchstart', (e) => {
+        if (e.target.closest('a, button')) return;
+        isDragging = true;
+        targetRotationY = null;
+        dragStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const deltaX = e.touches[0].clientX - dragStartX;
+        rotationY += deltaX * 0.22;
+        dragStartX = e.touches[0].clientX;
+        carouselEl.style.transform = `rotateY(${rotationY.toFixed(2)}deg)`;
+        updateActiveNodeTelemetry();
+    }, { passive: true });
+
+    // Tactical HUD Buttons
+    document.getElementById('prev-node-btn').addEventListener('click', () => {
+        const count = allProjects.length;
+        const angleStep = 360 / count;
+        const base = targetRotationY !== null ? targetRotationY : rotationY;
+        targetRotationY = Math.round((base + angleStep) / angleStep) * angleStep;
+        autoOrbit = false;
+        updateOrbitToggleButton();
+    });
+
+    document.getElementById('next-node-btn').addEventListener('click', () => {
+        const count = allProjects.length;
+        const angleStep = 360 / count;
+        const base = targetRotationY !== null ? targetRotationY : rotationY;
+        targetRotationY = Math.round((base - angleStep) / angleStep) * angleStep;
+        autoOrbit = false;
+        updateOrbitToggleButton();
+    });
+
+    document.getElementById('toggle-orbit-btn').addEventListener('click', () => {
+        targetRotationY = null;
+        autoOrbit = !autoOrbit;
+        updateOrbitToggleButton();
+    });
+
+    // View Mode Switcher ([3D_ORBIT + MATRIX] vs [MATRIX_ONLY])
+    const modeDualBtn = document.getElementById('mode-dual-btn');
+    const modeGridBtn = document.getElementById('mode-grid-btn');
+    const orbitalWrapper = document.getElementById('orbital-section-wrapper');
+
+    modeDualBtn.addEventListener('click', () => {
+        orbitalWrapper.style.display = 'block';
+        modeDualBtn.classList.add('filter-btn-active');
+        modeGridBtn.classList.remove('filter-btn-active');
+    });
+
+    modeGridBtn.addEventListener('click', () => {
+        orbitalWrapper.style.display = 'none';
+        modeGridBtn.classList.add('filter-btn-active');
+        modeDualBtn.classList.remove('filter-btn-active');
+    });
+
+    // Category Filter & Search Wiring
+    document.querySelectorAll('.filter-pill').forEach((pill) => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('.filter-pill').forEach((p) => p.classList.remove('filter-btn-active'));
+            pill.classList.add('filter-btn-active');
+            activeFilter = pill.getAttribute('data-filter') || 'ALL';
+            renderMatrixGrid();
+        });
+    });
+
+    document.getElementById('matrix-search-input').addEventListener('input', (e) => {
+        searchQuery = e.target.value || '';
+        renderMatrixGrid();
+    });
+
+    // ============================================================================
+    // 5. ZERO-KEY READ-ONLY GITHUB TOPIC ["portfolio"] AUTO-SYNC ENGINE
+    // ============================================================================
+    const GITHUB_USER = 'Ra9mirez11';
+    const REQUIRED_TOPIC = 'portfolio';
+    const CACHE_KEY = 'bohumel_showcase_gh_portfolio_v1';
+    const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+
+    function applyGitHubPortfolioRepos(repos) {
+        if (!Array.isArray(repos)) return;
+
+        const portfolioRepos = repos.filter((repo) => {
+            if (!repo || repo.fork || repo.private) return false;
+            const repoNameLower = String(repo.name || '').toLowerCase();
+            if (IGNORED_REPOS.has(repoNameLower)) return false;
+            const topics = Array.isArray(repo.topics) ? repo.topics.map((t) => String(t).toLowerCase()) : [];
+            return topics.includes(REQUIRED_TOPIC);
         });
 
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
-            carousel.style.animationPlayState = 'running';
+        let addedOrUpdated = false;
+
+        portfolioRepos.forEach((repo) => {
+            const repoNameLower = String(repo.name || '').toLowerCase();
+            const repoUrlLower = String(repo.html_url || '').toLowerCase();
+
+            // Check if this repo is already in allProjects
+            const existing = allProjects.find((p) => {
+                const matchByName = p.repoName && p.repoName.toLowerCase() === repoNameLower;
+                const matchByUrl = p.primaryLink && p.primaryLink.url && p.primaryLink.url.toLowerCase() === repoUrlLower;
+                return matchByName || matchByUrl;
+            });
+
+            if (existing) {
+                existing.githubSynced = true;
+                existing.stars = Number(repo.stargazers_count) || existing.stars || 0;
+                if (!existing.category.includes('GITHUB_SYNC')) {
+                    existing.category.push('GITHUB_SYNC');
+                }
+                if (repo.homepage && (!existing.secondaryLink || !existing.secondaryLink.url)) {
+                    existing.secondaryLink = { label: '[LIVE_DEMO]', url: repo.homepage };
+                }
+                addedOrUpdated = true;
+            } else {
+                // Brand-new repository tagged with "portfolio" on GitHub -> auto-add card!
+                const customTags = (repo.topics || [])
+                    .filter((t) => String(t).toLowerCase() !== REQUIRED_TOPIC)
+                    .slice(0, 3)
+                    .map((t) => String(t).toUpperCase().replace(/[^A-Z0-9_]/g, '_'));
+
+                if (repo.language) {
+                    customTags.unshift(String(repo.language).toUpperCase());
+                }
+                if (customTags.length === 0) {
+                    customTags.push('GITHUB_NODE', 'OPEN_SOURCE');
+                }
+
+                const badgeText = repo.language
+                    ? `${String(repo.language).toUpperCase().slice(0, 10)}_NODE`
+                    : 'GH_PORTFOLIO';
+
+                allProjects.push({
+                    id: `gh-${repoNameLower}`,
+                    repoName: repo.name,
+                    title: formatRepoTitle(repo.name),
+                    badge: badgeText,
+                    category: inferCategoriesFromRepo(repo),
+                    status: 'AUTO_SYNC // GITHUB',
+                    image: `https://opengraph.githubassets.com/1/${encodeURIComponent(GITHUB_USER)}/${encodeURIComponent(repo.name)}`,
+                    description: repo.description || 'Deployed repository synchronized automatically via GitHub [portfolio] topic telemetry.',
+                    tags: customTags.slice(0, 4),
+                    primaryLink: { label: '[VIEW_SOURCE]', url: repo.html_url, icon: 'code' },
+                    secondaryLink: repo.homepage
+                        ? { label: '[LIVE_DEMO]', url: repo.homepage }
+                        : { label: '[REPO_NODE_ACTIVE]', url: repo.html_url },
+                    githubSynced: true,
+                    stars: Number(repo.stargazers_count) || 0
+                });
+                addedOrUpdated = true;
+            }
         });
 
-        window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const x = e.clientX;
-            const deltaX = x - startX;
-            rotationY += deltaX * 0.1;
-            carousel.style.transform = `rotateY(${rotationY}deg)`;
-            startX = x;
-        });
+        if (addedOrUpdated) {
+            renderCarousel();
+            renderMatrixGrid();
+        }
 
-        // Touch support
-        window.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            startX = e.touches[0].clientX;
-            carousel.style.animationPlayState = 'paused';
-        });
+        const syncLabel = document.getElementById('sync-status-label');
+        if (syncLabel) {
+            syncLabel.textContent = `GH_SYNC: ACTIVE (${portfolioRepos.length} TAGGED)`;
+        }
+    }
 
-        window.addEventListener('touchend', () => {
-            isDragging = false;
-            carousel.style.animationPlayState = 'running';
-        });
+    async function syncGitHubPortfolioNodes() {
+        try {
+            const cachedRaw = localStorage.getItem(CACHE_KEY);
+            if (cachedRaw) {
+                const cached = JSON.parse(cachedRaw);
+                if (cached && Array.isArray(cached.data) && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
+                    applyGitHubPortfolioRepos(cached.data);
+                    return;
+                }
+            }
+        } catch (_) {
+            // Ignore localStorage parse errors
+        }
 
-        window.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const x = e.touches[0].clientX;
-            const deltaX = x - startX;
-            rotationY += deltaX * 0.1;
-            carousel.style.transform = `rotateY(${rotationY}deg)`;
-            startX = x;
-        });
+        try {
+            // 100% Public Read-Only Unauthenticated GET Request — Zero API Keys or Tokens
+            const response = await fetch(`https://api.github.com/users/${encodeURIComponent(GITHUB_USER)}/repos?sort=updated&per_page=100`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.github+json'
+                }
+            });
 
-        // Log Console Identity
-        console.log("%c SHOWCASE_NODE %c ENCRYPTED_BOOT_SUCCESSFUL ", 
-            "background: #00f5ff; color: #000; font-weight: bold; padding: 4px 8px;", 
-            "background: #131313; color: #00f5ff; border: 1px solid #00f5ff; padding: 4px 8px;");
-    </script>
+            if (!response.ok) {
+                throw new Error(`GitHub public API returned HTTP ${response.status}`);
+            }
+
+            const repos = await response.json();
+            applyGitHubPortfolioRepos(repos);
+
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify({
+                    timestamp: Date.now(),
+                    data: repos
+                }));
+            } catch (_) {
+                // Ignore storage quota errors
+            }
+        } catch (_) {
+            // Fallback to cached data if available
+            try {
+                const cachedRaw = localStorage.getItem(CACHE_KEY);
+                if (cachedRaw) {
+                    const cached = JSON.parse(cachedRaw);
+                    if (cached && Array.isArray(cached.data)) {
+                        applyGitHubPortfolioRepos(cached.data);
+                    }
+                }
+            } catch (_) {
+                // Curated projects remain rendered seamlessly
+            }
+        }
+    }
+
+    // Initial boot sequence
+    renderCarousel();
+    renderMatrixGrid();
+    requestAnimationFrame(animateOrbitalLoop);
+    syncGitHubPortfolioNodes();
+
+    console.log("%c SHOWCASE_NODE_v2 %c ZERO_KEY_GITHUB_PORTFOLIO_SYNC_ENGAGED ",
+        "background: #00f5ff; color: #000; font-weight: bold; padding: 4px 8px;",
+        "background: #131313; color: #00f5ff; border: 1px solid #00f5ff; padding: 4px 8px;");
+</script>
 </body>
 </html>
